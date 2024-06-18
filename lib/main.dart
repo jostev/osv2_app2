@@ -8,6 +8,7 @@ import 'services/theme_provider.dart';
 
 import 'dart:io'; 
 import 'package:flutter/foundation.dart'; 
+
 //
 // WAYS TO BUILD
 //
@@ -20,11 +21,11 @@ import 'package:flutter/foundation.dart';
 //
 // Implement music 
 // FIX darkmode and lightmode
-// fix ALL console bugs, release mode not working
+// Potentially separate all widgets into their own files
 //
 // LATER
 //
-// Add screen for connecting to osv2
+// Finish screen for connecting to osv2
 // Remove extra libraries (just_audio_windows)
 
 

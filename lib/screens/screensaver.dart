@@ -199,7 +199,7 @@ with SingleTickerProviderStateMixin {
               ],),
               const Divider(height: 100, color: Colors.transparent,),
               () {
-                if (widget.sentDuration - _duration != 3600) {
+                if (widget.sentDuration - _duration != 3600 || _duration == 0) {
                   return const Text(
                     'Welcome', 
                     style: TextStyle(
@@ -237,7 +237,7 @@ with SingleTickerProviderStateMixin {
   void startTimer() {
     // ignore: unused_local_variable
     Timer _timer = Timer.periodic(
-      const Duration(milliseconds: 1),
+      const Duration(seconds: 1),
       (Timer timer) {
         if (_duration == widget.sentDuration || timerStart) {
           setState(() {

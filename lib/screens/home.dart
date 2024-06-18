@@ -36,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int john = 0;
   // MUSIC PLAYER //
   List<String> music = [
-    "assets/music/ORIGINAL _1HOUR_Full_Track.mp4",
-    "assets/music/ORIGINAL_10&10_Relaxing_sounds.mp4",
+    "assets/music/CC_1HR.mp4",
+    "assets/music/CC_10&10.mp4",
     "assets/music/fun.mp3",
   ];
   List<String> musicNames = [

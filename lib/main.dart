@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart'; // dependencies
 import 'package:flutter/services.dart';
 import 'package:osv2_app2/screens/home.dart'; // screen
+// ignore: unused_import
 import 'package:osv2_app2/screens/connect.dart'; // screen
 import 'package:osv2_app2/utils/theme_data_style.dart'; // utils
 import 'package:provider/provider.dart';
@@ -19,8 +20,6 @@ import 'package:flutter/foundation.dart';
 //
 // TODO LIST
 //
-// Implement music 
-// FIX darkmode and lightmode
 // Potentially separate all widgets into their own files
 //
 // LATER

@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:osv2_app2/screens/john.dart';
 import 'package:provider/provider.dart';
-
 
 import 'package:osv2_app2/utils/icon_button.dart';
 import 'package:osv2_app2/utils/logo.dart';
@@ -20,7 +18,6 @@ import 'package:osv2_app2/screens/screensaver.dart';
 import 'package:just_audio/just_audio.dart';
 
 
-bool darkMode = false;
 const int pumpModeOff = 100;
 const int pumpModeSuper = 102;
 
@@ -36,8 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int john = 0;
   // MUSIC PLAYER //
   List<String> music = [
-    "assets/music/CC_1HR.mp4",
-    "assets/music/CC_10&10.mp4",
+    "assets/music/CC_1HR.mp3",
+    "assets/music/CC_10&10.mp3",
     "assets/music/fun.mp3",
   ];
   List<String> musicNames = [
@@ -58,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
       buttons.add(
         SizedBox(
           height: 60,
-          width: 240,
+          width: SCREEN_WIDTH * 0.28,
           child: TextButton(
             onPressed: () {
               _timer.cancel();
@@ -145,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_pumpDuration == 0) {
           setState(() {
             _pumpDuration = 600;
+            pumpTimerStart = false;
             LocalServices().sendPostCommandRequest(
               100, 0, 0, 0, 0, 0
             );
@@ -157,6 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         if (!pumpTimerStart) {
           _pumpDuration = 600;
+          pumpTimerStart = false;
           LocalServices().sendPostCommandRequest(
             100, 0, 0, 0, 0, 0
           );
@@ -169,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String timeToString(int seconds) {
     // converts seconds to mm:ss format
     int imin = (seconds/60).floor();
-    String sec = (seconds - 60 * imin).toString();
+    String sec = (seconds%60).toString();
     if (sec.length == 1) {
       sec = '0$sec';
     }
@@ -183,6 +182,14 @@ class _HomeScreenState extends State<HomeScreen> {
   getData () async
   {
     poll = await LocalServices().getPoll();
+  }
+
+  late FocusNode focusNode;
+
+  @override void initState() {
+    super.initState();
+
+    focusNode = FocusNode();
   }
 
   @override
@@ -199,24 +206,24 @@ class _HomeScreenState extends State<HomeScreen> {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     TextStyle guage1 = TextStyle(
-      fontSize: 40, 
+      fontSize: SCREEN_WIDTH * 0.04, 
       color: Theme.of(context).primaryColor, 
       fontWeight: FontWeight.w700
     );
 
     TextStyle label1 = TextStyle(
-      fontSize: 20, 
+      fontSize: SCREEN_WIDTH * 0.02, 
       color: Theme.of(context).hintColor, 
       fontWeight: FontWeight.w700
     );
 
     TextStyle btn1 = TextStyle(
-      fontSize: 20, 
+      fontSize: SCREEN_WIDTH * 0.02, 
       color: Theme.of(context).colorScheme.primary
     );
 
     TextStyle btn2 = TextStyle(
-      fontSize: 15, 
+      fontSize: SCREEN_WIDTH * 0.015, 
       color: Theme.of(context).hintColor
     );
 
@@ -271,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(children: [
               Container(
                 color: Colors.transparent,
-                height: SCREEN_HEIGHT * 0.5,
+                height: SCREEN_HEIGHT * 0.50,
                 width: SCREEN_WIDTH * 0.28,
                 child: 
                 Column(children: [
@@ -325,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   ],),
                   Divider(
-                    height: SCREEN_HEIGHT * 0.02, 
+                    height: SCREEN_HEIGHT * 0.017, 
                     color: Colors.transparent
                   ),
                   Text("Session Time", style: label1,)
@@ -411,6 +418,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: TextField(
                   cursorColor: Theme.of(context).primaryColor,
                   controller: nameController,
+                  focusNode: focusNode,
+                  autofocus: false, 
                   onTapOutside: (event) {
                     FocusScope.of(context).unfocus();
                   },
@@ -559,7 +568,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text("${poll!.temp}°C", style: guage1,),
                           ),
                           Divider(
-                            height: SCREEN_HEIGHT * 0.02, 
+                            height: SCREEN_HEIGHT * 0.017, 
                             color: Colors.transparent
                           ),
                           Text("Water Temp", style: label1,)
@@ -597,7 +606,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context, 
                                 MaterialPageRoute(builder: (context) => 
-                                ScreenSaver(sentDuration: _duration, timerStarted: timerStart, usersName: nameController.text,))
+                                ScreenSaver(
+                                  sentDuration: _duration, 
+                                  timerStarted: timerStart, 
+                                  usersName: nameController.text,
+                                  focusNode: focusNode,
+                                ))
                               );
                             },
                             foregroundColor: Theme.of(context).primaryColor,

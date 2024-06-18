@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
+import 'package:osv2_app2/utils/icon_button.dart';
 
 FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
 Size size = view.physicalSize / view.devicePixelRatio;
@@ -13,6 +14,7 @@ class WaveAnimation extends StatefulWidget {
   const WaveAnimation({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _WaveAnimationState createState() => _WaveAnimationState();
 }
 
@@ -23,7 +25,7 @@ with SingleTickerProviderStateMixin {
     super.initState();
     _controller = AnimationController(
       vsync: this, // sync animation with widget
-      duration: Duration(seconds: 4), // animation duration
+      duration: const Duration(seconds: 4), // animation duration
     )..repeat(); // repeat animation back and forth
   }
 
@@ -57,7 +59,7 @@ class WavePainter extends CustomPainter {
   @override 
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color.fromARGB(192, 0, 0, 0)
+      ..color = const Color.fromARGB(192, 0, 0, 0)
       ..style = PaintingStyle.fill;
     
     final path = Path();
@@ -80,7 +82,7 @@ class WavePainter extends CustomPainter {
 
     // SECOND WAVE
     final paint1 = Paint()
-      ..color = Color.fromARGB(146, 0, 0, 0)
+      ..color = const Color.fromARGB(146, 0, 0, 0)
       ..style = PaintingStyle.fill;
     
     final path1 = Path();
@@ -111,12 +113,14 @@ class ScreenSaver extends StatefulWidget {
   final int sentDuration;
   final bool timerStarted;
   final String usersName;
+  final FocusNode focusNode;
 
   const ScreenSaver({
     super.key, 
     required this.sentDuration, 
     required this.timerStarted, 
-    required this.usersName
+    required this.usersName,
+    required this.focusNode
   });
 
   
@@ -151,6 +155,7 @@ with SingleTickerProviderStateMixin {
       startTimer();
     }
     return Scaffold(
+      backgroundColor: Colors.black,
       body:GestureDetector(
         onTap: () {
           SystemChrome.setEnabledSystemUIMode(
@@ -159,6 +164,7 @@ with SingleTickerProviderStateMixin {
           );
           timerStart = true;
           Navigator.pop(context);
+          widget.focusNode.unfocus();
         },
         child: Container(
           height: size.height,
@@ -170,7 +176,7 @@ with SingleTickerProviderStateMixin {
           children: [
             Image.asset("assets/images/bg_image.jpeg", fit: BoxFit.fitWidth),
             Container(color: const Color.fromARGB(77, 0, 0, 0),),
-            WaveAnimation(),
+            const WaveAnimation(),
             Column(children: [
               const Divider(height: 100, color: Colors.transparent,),
               Stack(children: [
@@ -197,23 +203,23 @@ with SingleTickerProviderStateMixin {
                 )
                 )
               ],),
-              const Divider(height: 100, color: Colors.transparent,),
+              Divider(height: SCREEN_WIDTH * 0.1, color: Colors.transparent,),
               () {
                 if (widget.sentDuration - _duration != 3600 || _duration == 0) {
-                  return const Text(
+                  return Text(
                     'Welcome', 
                     style: TextStyle(
                       color: Colors.white, 
-                      fontSize: 30, 
+                      fontSize: SCREEN_WIDTH * 0.03, 
                       fontWeight: FontWeight.w300
                     )
                   );
                 } else {
-                  return const Text(
+                  return Text(
                     'Thank you for your time', 
                     style: TextStyle(
                       color: Colors.white, 
-                      fontSize: 30, 
+                      fontSize: SCREEN_WIDTH * 0.03, 
                       fontWeight: FontWeight.w300
                     )
                   );
@@ -221,9 +227,9 @@ with SingleTickerProviderStateMixin {
               }(),
               Text(
                 widget.usersName.replaceAll('\n', ' '), 
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white, 
-                  fontSize: 80,
+                  fontSize: SCREEN_WIDTH * 0.07,
                   fontWeight: FontWeight.w300,
                 ),
               )
@@ -235,7 +241,7 @@ with SingleTickerProviderStateMixin {
   }
 
   void startTimer() {
-    // ignore: unused_local_variable
+    // ignore: unused_local_variable, no_leading_underscores_for_local_identifiers
     Timer _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {

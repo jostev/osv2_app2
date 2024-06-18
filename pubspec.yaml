@@ -72,8 +72,8 @@ flutter:
     - assets/images/logo_by_maytronics.png
     - assets/images/logo.png
     - assets/images/white_logo.png
-    - assets/music/CC_1HR.mp4
-    - assets/music/CC_10&10.mp4
+    - assets/music/CC_1HR.mp3
+    - assets/music/CC_10&10.mp3
     - assets/music/fun.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,0 +1,20 @@
+A Dart VM Service on SM T505 is available at: http://127.0.0.1:57983/rqie0EJBelk=/
+The Flutter DevTools debugger and profiler on SM T505 is available at: http://127.0.0.1:9101?uri=http://127.0.0.1:57983/rqie0EJBelk=/
+I/SurfaceView(25621): applySurfaceTransforms: t = android.view.SurfaceControl$Transaction@30ad10c surfaceControl = Surface(name=SurfaceView - com.example.osv2_app2/com.example.osv2_app2.MainActivity@d18c85e@0)/@0x294da55 frame = 1
+I/ViewRootImpl@3a2c798[MainActivity](25621): MSG_WINDOW_FOCUS_CHANGED 1 1
+D/InputMethodManager(25621): prepareNavigationBarInfo() DecorView@3338cac[MainActivity]
+D/InputMethodManager(25621): getNavigationBarColor() -855310
+D/InputMethodManager(25621): prepareNavigationBarInfo() DecorView@3338cac[MainActivity]
+D/InputMethodManager(25621): getNavigationBarColor() -855310
+V/InputMethodManager(25621): Starting input: tba=com.example.osv2_app2 ic=null mNaviBarColor -855310 mIsGetNaviBarColorSuccess true , NavVisible : true , NavTrans : false
+D/InputMethodManager(25621): startInputInner - Id : 0
+I/InputMethodManager(25621): startInputInner - mService.startInputOrWindowGainedFocus
+D/InputTransport(25621): Input channel constructed: 'ClientS', fd=111
+D/InputMethodManager(25621): prepareNavigationBarInfo() DecorView@3338cac[MainActivity]
+D/InputMethodManager(25621): getNavigationBarColor() -855310 <--
+V/InputMethodManager(25621): Starting input: tba=com.example.osv2_app2 ic=null mNaviBarColor -855310 mIsGetNaviBarColorSuccess true , NavVisible : true , NavTrans : false
+D/InputMethodManager(25621): startInputInner - Id : 0
+I/SurfaceControl(25621): nativeRelease nativeObject s[-5476376609463825312]
+I/SurfaceControl(25621): nativeRelease nativeObject e[-5476376609463825312]
+I/SurfaceControl(25621): nativeRelease nativeObject s[-5476376609463825632]
+I/SurfaceControl(25621): nativeRelease nativeObject e[-5476376609463825632]

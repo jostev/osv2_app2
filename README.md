@@ -18,9 +18,7 @@ Custom developed application for the company City Cave to interact with Maytroni
    flutter run --debug   # run this if there are errors or changed code
    flutter run --release   # faster than debug mode
    ```
-6. You may need to add ```xml
-   <uses-permission android:name="android.permission.INTERNET"/>
-   ``` to android/app/src AndroidManifest.xml.
+6. You may need to add ```<uses-permission android:name="android.permission.INTERNET"/>``` to android/app/src/debug/AndroidManifest.xml o android/app/src/main/AndroidManifest.xml.
 
 ## Screenshots
 ![image](https://github.com/jostev/osv2_app2/assets/158697367/5fc04ec0-a01e-4bd2-8e82-c98fc295862a)

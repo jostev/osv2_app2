@@ -10,10 +10,10 @@ Poll pollFromJson(String str) => Poll.fromJson(json.decode(str));
 String pollToJson(Poll data) => json.encode(data.toJson());
 
 class Poll {
-    int ph;
-    int ch;
+    double ph;
+    double ch;
     int orp;
-    int temp;
+    double temp;
     dynamic error;
 
     Poll({
@@ -25,10 +25,11 @@ class Poll {
     });
 
     factory Poll.fromJson(Map<String, dynamic> json) => Poll(
-        ph: json["PH"].toInt(),
-        ch: json["CH"].toInt(),
-        orp: json["ORP"].toInt(),
-        temp: json["TEMP"].toInt(),
+        ph: int.parse(json["PH"])/100,
+        ch: double.parse(json["CH"]),
+        orp: int.parse(json["ORP"]),
+        temp: double.parse(json["CH"]),
+        
         error: json["error"],
     );
 

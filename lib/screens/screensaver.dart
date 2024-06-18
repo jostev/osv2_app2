@@ -58,8 +58,9 @@ class WavePainter extends CustomPainter {
 
   @override 
   void paint(Canvas canvas, Size size) {
+    const black = Color.fromARGB(167, 0, 0, 0);
     final paint = Paint()
-      ..color = const Color.fromARGB(192, 0, 0, 0)
+      ..color = black
       ..style = PaintingStyle.fill;
     
     final path = Path();
@@ -68,7 +69,6 @@ class WavePainter extends CustomPainter {
 
 
     double height = - size.height * 0.05;
-    double increment = size.width/ 4;
 
     for (int i = 0; i < size.width; i++) {
       final x = i.toDouble();
@@ -82,7 +82,7 @@ class WavePainter extends CustomPainter {
 
     // SECOND WAVE
     final paint1 = Paint()
-      ..color = const Color.fromARGB(146, 0, 0, 0)
+      ..color = black
       ..style = PaintingStyle.fill;
     
     final path1 = Path();
@@ -198,7 +198,8 @@ with SingleTickerProviderStateMixin {
                   child: Text(timeToString(widget.sentDuration - _duration), style: const TextStyle(
                     color: Colors.white, 
                     fontSize: 60,
-                    fontWeight: FontWeight.w300
+                    fontFamily: 'RobotoMono',
+                    // fontWeight: FontWeight.w500
                   )
                 )
                 )
@@ -211,7 +212,8 @@ with SingleTickerProviderStateMixin {
                     style: TextStyle(
                       color: Colors.white, 
                       fontSize: SCREEN_WIDTH * 0.03, 
-                      fontWeight: FontWeight.w300
+                      fontFamily: 'RobotoMono',
+                      // fontWeight: FontWeight.w300
                     )
                   );
                 } else {
@@ -220,7 +222,8 @@ with SingleTickerProviderStateMixin {
                     style: TextStyle(
                       color: Colors.white, 
                       fontSize: SCREEN_WIDTH * 0.03, 
-                      fontWeight: FontWeight.w300
+                      fontFamily: 'RobotoMono',
+                      // fontWeight: FontWeight.w300
                     )
                   );
                 }
@@ -229,8 +232,9 @@ with SingleTickerProviderStateMixin {
                 widget.usersName.replaceAll('\n', ' '), 
                 style: TextStyle(
                   color: Colors.white, 
-                  fontSize: SCREEN_WIDTH * 0.07,
-                  fontWeight: FontWeight.w300,
+                  fontSize: SCREEN_WIDTH * 0.08,
+                  fontFamily: 'RobotoMono',
+                  // fontWeight: FontWeight.w300,
                 ),
               )
             ],),

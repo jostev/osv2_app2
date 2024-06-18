@@ -31,6 +31,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int john = 0;
+  double ph = 1;
+  double ch = 1;
+  int orp = 1;
+  double temp = 1;
+  String? error;
   // MUSIC PLAYER //
   List<String> music = [
     "assets/music/CC_1HR.mp3",
@@ -107,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // ignore: unused_local_variable
     Timer _timer = Timer.periodic(
       timeInc,
-      (Timer timer) {
+      (Timer timer) async {
         if (_duration == 0) {
           setState(() {
             _duration = 3600;
@@ -132,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final Timer pumpTimer = Timer(const Duration(seconds: 600), () {});
   bool pumpTimerStart = false;
 
-  void startPumpTimer() {
+  void startPumpTimer() async {
     // session timer
     const timeInc = Duration(seconds: 1);
     // ignore: unused_local_variable
@@ -176,11 +181,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   final nameController = TextEditingController();
-  
+
   //getData to update poll
+  // Poll? poll;
+  // getData () async
+  // {
+  //   poll = await LocalServices().getPoll();
+  // }
+
+
   Poll? poll;
-  getData () async
-  {
+  
+  getData() async {
     poll = await LocalServices().getPoll();
   }
 
@@ -200,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
     pumpTimer.cancel();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -227,30 +239,39 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Theme.of(context).hintColor
     );
 
-    if (poll != null && poll!.error != null) {
-      //
-      // Alert Dialog (Does not work)
-      //
-      AlertDialog(
-        title: const Text("Error"),
-        content: Text(poll!.error),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            }, 
-            child: const Text("Close")
-          )
-        ],
-      );
-    } else {
-      getData();
-    }
+    // if (poll != null && error != null) {
+    //   //
+    //   // Alert Dialog (Does not work)
+    //   //
+    //   AlertDialog(
+    //     title: const Text("Error"),
+    //     content: Text(error!),
+    //     actions: [
+    //       TextButton(
+    //         onPressed: () {
+    //           Navigator.of(context).pop();
+    //         }, 
+    //         child: const Text("Close")
+    //       )
+    //     ],
+    //   );
+    // }
+    
+    // getData();
+    
+    // if (poll?.ph == null || poll?.orp == null || poll?.ch == null) {
+    //   poll = Poll(ph: 1, orp: 1, ch: 1, temp: 1, error: null);
+    // }
+    
+    // ph = poll!.ph;
+    // ch = poll!.ch;
+    // orp = poll!.orp;
+    // temp = poll!.temp;
+    
     
     // default values if poll is null
-    if (poll?.ph == null || poll?.orp == null || poll?.ch == null) {
-      poll = Poll(ph: 5, orp: 5, ch: 5, temp: 20, error: null);
-    }
+    //parallelOperation();
+    getData();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -448,6 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+              
               //
               // BAR GRAPH / CHART READINGS
               //
@@ -481,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         8, // maxY
                         7, // standard
                         "PH",
-                        [poll!.ph.toDouble()/100],
+                        [ph],
                       ),
                     ),
                     SizedBox(
@@ -496,7 +518,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         900, // maxY
                         800, // standard
                         "ORP",
-                        [poll!.orp.toDouble()],
+                        [orp.toDouble()],
                       ),
                     ),
                     SizedBox(
@@ -511,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         25, // maxY
                         20, // standard
                         "CH",
-                        [poll!.ch.toDouble()],
+                        [ch],
                       ),
                     ),
                   ],),
@@ -565,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             ),
                             alignment: Alignment.center,
-                            child: Text("${poll!.temp}°C", style: guage1,),
+                            child: Text("$temp°C", style: guage1,),
                           ),
                           Divider(
                             height: SCREEN_HEIGHT * 0.017, 
@@ -682,7 +704,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (pumpTimerStart) {
                                 pumpTimer.cancel();
                                 pumpTimerStart = !pumpTimerStart;
+                                print("off");
                                 try {
+                                  print("sent pump off");
                                   LocalServices().sendPostCommandRequest(
                                     pumpModeOff, 0, 0, 0, 0, 0
                                   );
@@ -691,7 +715,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 }
                               } else {
                                 pumpTimerStart = !pumpTimerStart;
+                                print("on");
                                 try {
+                                  print("sent pump on");
                                   LocalServices().sendPostCommandRequest(
                                     pumpModeSuper, 0, 0, 0, 0, 0
                                   );

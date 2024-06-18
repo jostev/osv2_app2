@@ -22,22 +22,21 @@ class LocalServices
   //get
   Future<Poll> getPoll() async
   {
+    // print(json);
     var api = '/poll';
     var url = Uri.parse(baseUrl + api);
     try {
-      var response = await client.get(url);
-      var json = response.body;
+      final response = await client.get(url);
+      final json = response.body;
+      // print(json);
       return pollFromJson(json);
-    } catch (e) {
-      if (e is SocketException) {
-        return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e");
-      }
-      return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Caught error: $e");
+    } finally {
+      // if (e is SocketException) {
+      //   return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e");
+      // }
+      // return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Caught error: $e");
+      client.close();
     }
-    // var response = await client.get(url);
-
-    // var json = response.body;
-    // return pollFromJson(json);
   }
 
   Future<dynamic> sendPostCommandRequest(int cmd, int cmddata_1, int cmddata_2, int cmddata_3, int cmddata_4, int cmddata_5) async {

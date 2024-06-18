@@ -14,9 +14,9 @@ Custom developed application for the company City Cave to interact with Maytroni
 4. Connect to MineralSwimV2 via Bluefi.
 5. Build and run the app using
    ```bash
-   flutter run
-   flutter run --debug
-   flutter run --release
+   flutter run   # default mode
+   flutter run --debug   # run this if there are errors or changed code
+   flutter run --release   # faster than debug mode
    ```
 
 ## Screenshots

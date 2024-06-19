@@ -17,6 +17,8 @@ import 'package:osv2_app2/model/poll.dart';
 import 'package:osv2_app2/screens/screensaver.dart';
 import 'package:just_audio/just_audio.dart';
 
+import 'dart:isolate';
+
 
 const int pumpModeOff = 100;
 const int pumpModeSuper = 102;
@@ -182,27 +184,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final nameController = TextEditingController();
 
-  //getData to update poll
-  // Poll? poll;
-  // getData () async
-  // {
-  //   poll = await LocalServices().getPoll();
-  // }
-
-
   Poll? poll;
-  
-  getData() async {
+  getData () async
+  {
+    print("getData");
     poll = await LocalServices().getPoll();
+    if (poll != null) {
+      ph = poll!.ph;
+      ch = poll!.ch;
+      orp = poll!.orp;
+      temp = poll!.temp;
+    } else {
+      ph = 0;
+      ch = 0;
+      orp = 0;
+      temp = 0;
+    }
   }
 
   late FocusNode focusNode;
-
   @override void initState() {
     super.initState();
-
     focusNode = FocusNode();
+    getData();
   }
+
+  Stream<Poll> pollStream = Stream.empty();
 
   @override
   void dispose() {
@@ -212,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
     pumpTimer.cancel();
     super.dispose();
   }
-
+  
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -239,39 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Theme.of(context).hintColor
     );
 
-    // if (poll != null && error != null) {
-    //   //
-    //   // Alert Dialog (Does not work)
-    //   //
-    //   AlertDialog(
-    //     title: const Text("Error"),
-    //     content: Text(error!),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () {
-    //           Navigator.of(context).pop();
-    //         }, 
-    //         child: const Text("Close")
-    //       )
-    //     ],
-    //   );
-    // }
-    
-    // getData();
-    
-    // if (poll?.ph == null || poll?.orp == null || poll?.ch == null) {
-    //   poll = Poll(ph: 1, orp: 1, ch: 1, temp: 1, error: null);
-    // }
-    
-    // ph = poll!.ph;
-    // ch = poll!.ch;
-    // orp = poll!.orp;
-    // temp = poll!.temp;
     
     
-    // default values if poll is null
-    //parallelOperation();
-    getData();
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -481,8 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 30, 
                   bottom: 30
                 ),
-                child: 
-                Stack(children: [
+                child: Stack(children: [
                   barChartBG(context, 
                     (
                       Theme.of(context).colorScheme.secondary 
@@ -490,54 +465,38 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     [SCREEN_WIDTH, SCREEN_HEIGHT]
                   ),
-                  Row(children: [
-                    SizedBox(
-                      height: SCREEN_HEIGHT * 0.85 * 0.65 - 50,
-                      width: SCREEN_WIDTH * 0.44 / 3 - 60 / 3,
-                      child: customBarChart(
-                        context, 
-                        (
-                          Theme.of(context).colorScheme.secondary 
-                          == CustomColors.btn1
-                        ),
-                        8, // maxY
-                        7, // standard
-                        "PH",
-                        [ph],
-                      ),
-                    ),
-                    SizedBox(
-                      height: SCREEN_HEIGHT * 0.85 * 0.65 - 50,
-                      width: SCREEN_WIDTH * 0.44 / 3 - 60 / 3,
-                      child: customBarChart(
-                        context, 
-                        (
-                          Theme.of(context).colorScheme.secondary 
-                          == CustomColors.btn1
-                        ),
-                        900, // maxY
-                        800, // standard
-                        "ORP",
-                        [orp.toDouble()],
-                      ),
-                    ),
-                    SizedBox(
-                      height: SCREEN_HEIGHT * 0.85 * 0.65 - 50,
-                      width: SCREEN_WIDTH * 0.44 / 3 - 60 / 3,
-                      child: customBarChart(
-                        context, 
-                        (
-                          Theme.of(context).colorScheme.secondary 
-                          == CustomColors.btn1
-                        ),
-                        25, // maxY
-                        20, // standard
-                        "CH",
-                        [ch],
-                      ),
-                    ),
-                  ],),
-                ],)
+
+                  StreamBuilder(
+                    stream: LocalServices().getPollStream(), 
+                    initialData: null, 
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Text("Error: ${snapshot.error}");
+                      }
+                      if (snapshot.hasData && snapshot.data == 'done') {
+                        return const Text("Done");
+                      }
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.none:
+                          return const Text("No connection");
+                        case ConnectionState.waiting:
+                          return const Text("Waiting...");
+                        case ConnectionState.active:
+                          if (snapshot.hasData) {
+                            print(snapshot);
+                            ph = snapshot.data!.ph;
+                            ch = snapshot.data!.ch;
+                            if (orp < 20000) orp = snapshot.data!.orp;
+                          }
+                          
+                          return barChartValues(context, SCREEN_HEIGHT, SCREEN_WIDTH, ph, ch, orp);
+                        case ConnectionState.done:
+                          return const Text("Done");
+                      }
+                    }
+                  )
+                ]),
+                
                 
               ),
             ],),
@@ -587,7 +546,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             ),
                             alignment: Alignment.center,
-                            child: Text("$temp°C", style: guage1,),
+                            child: Text("20°C", style: guage1,), // FIX
                           ),
                           Divider(
                             height: SCREEN_HEIGHT * 0.017, 

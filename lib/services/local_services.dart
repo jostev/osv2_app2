@@ -7,7 +7,7 @@
 // }
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:isolate';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -35,9 +35,43 @@ class LocalServices
       //   return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e");
       // }
       // return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Caught error: $e");
-      client.close();
+      // client.close();
     }
   }
+
+  Stream<Poll> getPollStream() async* {
+    // Create a ReceivePort to receive messages from the isolate
+    final receivePort = ReceivePort();
+
+    // Create the isolate
+    await Isolate.spawn(_pollWorker, receivePort.sendPort);
+
+    // Listen to the messages from the isolate
+    await for (final message in receivePort) {
+      if (message is Poll) {
+        yield message;
+      } else if (message == 'done') {
+        break; // Exit the loop if the worker is done
+      }
+    }
+  }
+
+  // The entry point for the isolate
+  void _pollWorker(SendPort sendPort) async {
+    // Create a ReceivePort to receive messages from the main isolate (if needed)
+    final receivePort = ReceivePort();
+
+    // Send the SendPort of this isolate to the main isolate
+    sendPort.send(receivePort.sendPort);
+
+    // Simulate continuous polling
+    while (true) {
+      final poll = await getPoll(); // Assuming getPoll() returns a Future<Poll>
+      sendPort.send(poll); // Send the poll object to the main isolate
+      await Future.delayed(const Duration(milliseconds: 32)); // Wait for next poll
+    }
+  }
+  
 
   Future<dynamic> sendPostCommandRequest(int cmd, int cmddata_1, int cmddata_2, int cmddata_3, int cmddata_4, int cmddata_5) async {
     var api = '/cmd';

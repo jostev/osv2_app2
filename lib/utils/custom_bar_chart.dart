@@ -204,3 +204,53 @@ Widget barChartBG(
   }
   return Row(children: barCharts,);
 }
+
+Widget barChartValues(BuildContext context, double SCREEN_HEIGHT, double SCREEN_WIDTH, double ph, double ch, int orp) {
+  return Row(children: [
+    SizedBox(
+      height: SCREEN_HEIGHT * 0.85 * 0.65 - 50,
+      width: SCREEN_WIDTH * 0.44 / 3 - 60 / 3,
+      child: customBarChart(
+        context, 
+        (
+          Theme.of(context).colorScheme.secondary 
+          == CustomColors.btn1
+        ),
+        8, // maxY
+        7, // standard
+        "PH",
+        [ph],
+      ),
+    ),
+    SizedBox(
+      height: SCREEN_HEIGHT * 0.85 * 0.65 - 50,
+      width: SCREEN_WIDTH * 0.44 / 3 - 60 / 3,
+      child: customBarChart(
+        context, 
+        (
+          Theme.of(context).colorScheme.secondary 
+          == CustomColors.btn1
+        ),
+        900, // maxY
+        800, // standard
+        "ORP",
+        [orp.toDouble()],
+      ),
+    ),
+    SizedBox(
+      height: SCREEN_HEIGHT * 0.85 * 0.65 - 50,
+      width: SCREEN_WIDTH * 0.44 / 3 - 60 / 3,
+      child: customBarChart(
+        context, 
+        (
+          Theme.of(context).colorScheme.secondary 
+          == CustomColors.btn1
+        ),
+        25, // maxY
+        20, // standard
+        "CH",
+        [ch],
+      ),
+    ),
+  ],);
+}

@@ -21,6 +21,7 @@ import 'package:flutter/foundation.dart';
 // TODO LIST
 //
 // Potentially separate all widgets into their own files
+// Use providers
 //
 // LATER
 //

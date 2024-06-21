@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:osv2_app2/utils/icon_button.dart';
 
 FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
@@ -131,133 +132,19 @@ class ScreenSaver extends StatefulWidget {
 
 class _ScreenSaverState extends State<ScreenSaver> 
 with SingleTickerProviderStateMixin {
-  int _duration = 0;
+  ValueNotifier<int> _duration = ValueNotifier<int>(0);
   final Timer _timer = Timer(const Duration(seconds: 1), () { });
-  bool timerStart = true;
-
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    if (timerStart & widget.timerStarted) {
-      timerStart = false;
-      startTimer();
-    }
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body:GestureDetector(
-        onTap: () {
-          SystemChrome.setEnabledSystemUIMode(
-            SystemUiMode.manual,
-            overlays: SystemUiOverlay.values,
-          );
-          timerStart = true;
-          Navigator.pop(context);
-          widget.focusNode.unfocus();
-        },
-        child: Container(
-          height: size.height,
-          width: size.width,
-          alignment: Alignment.centerLeft,
-          //child: Text(timeToString(widget.sentDuration - _duration),
-          child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset("assets/images/bg_image.jpeg", fit: BoxFit.fitWidth),
-            Container(color: const Color.fromARGB(77, 0, 0, 0),),
-            const WaveAnimation(),
-            Column(children: [
-              const Divider(height: 100, color: Colors.transparent,),
-              Stack(children: [
-                SizedBox(
-                  height: size.height * 0.4,
-                  width: size.height * 0.4,
-                  child: Transform.flip(
-                    flipX: true,
-                    child: CircularProgressIndicator(
-                      value: (widget.sentDuration - _duration)/3600, 
-                      color: Colors.white, strokeWidth: 3,
-                    )
-                  ) 
-                ),
-                Container(
-                  height: size.height * 0.4,
-                  width: size.height * 0.4,
-                  alignment: Alignment.center,
-                  child: Text(timeToString(widget.sentDuration - _duration), style: const TextStyle(
-                    color: Colors.white, 
-                    fontSize: 60,
-                    fontFamily: 'RobotoMono',
-                    // fontWeight: FontWeight.w500
-                  )
-                )
-                )
-              ],),
-              Divider(height: SCREEN_WIDTH * 0.1, color: Colors.transparent,),
-              () {
-                if (widget.sentDuration - _duration != 3600 || _duration == 0) {
-                  return Text(
-                    'Welcome', 
-                    style: TextStyle(
-                      color: Colors.white, 
-                      fontSize: SCREEN_WIDTH * 0.03, 
-                      fontFamily: 'RobotoMono',
-                      // fontWeight: FontWeight.w300
-                    )
-                  );
-                } else {
-                  return Text(
-                    'Thank you for your time', 
-                    style: TextStyle(
-                      color: Colors.white, 
-                      fontSize: SCREEN_WIDTH * 0.03, 
-                      fontFamily: 'RobotoMono',
-                      // fontWeight: FontWeight.w300
-                    )
-                  );
-                }
-              }(),
-              Text(
-                widget.usersName.replaceAll('\n', ' '), 
-                style: TextStyle(
-                  color: Colors.white, 
-                  fontSize: SCREEN_WIDTH * 0.08,
-                  fontFamily: 'RobotoMono',
-                  // fontWeight: FontWeight.w300,
-                ),
-              )
-            ],),
-          ],) 
-        ),
-      )
-    ); 
-  }
 
   void startTimer() {
     // ignore: unused_local_variable, no_leading_underscores_for_local_identifiers
     Timer _timer = Timer.periodic(
       const Duration(seconds: 1),
       (Timer timer) {
-        if (_duration == widget.sentDuration || timerStart) {
-          setState(() {
-            _duration = widget.sentDuration - 3600;
-            timer.cancel();
-          });
+        if (_duration.value == widget.sentDuration) {
+          _duration.value = widget.sentDuration - 3600;
+          timer.cancel();
         } else {
-          setState(() {
-            _duration += 1;
-          });
+          _duration.value++;
         }
         
       },
@@ -273,5 +160,124 @@ with SingleTickerProviderStateMixin {
       sec = '0$sec';
     }
     return '$imin:$sec';
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.timerStarted) startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    
+    
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body:GestureDetector(
+        onTap: () {
+          SystemChrome.setEnabledSystemUIMode(
+            SystemUiMode.manual,
+            overlays: SystemUiOverlay.values,
+          );
+          Navigator.pop(context);
+          widget.focusNode.unfocus();
+        },
+        child: Container(
+          height: size.height,
+          width: size.width,
+          alignment: Alignment.centerLeft,
+          //child: Text(timeToString(widget.sentDuration - _duration),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.asset("assets/images/bg_image.jpeg", fit: BoxFit.fitWidth),
+              Container(color: const Color.fromARGB(77, 0, 0, 0),),
+              const WaveAnimation(),
+              Column(children: [
+                const Divider(height: 100, color: Colors.transparent,),
+                ValueListenableBuilder(
+                  valueListenable: _duration, 
+                  builder: (context, value, child) {
+                    return Column(children: [
+                      Stack(children: [
+                        SizedBox(
+                          height: size.height * 0.4,
+                          width: size.height * 0.4,
+                          child: Transform.flip(
+                            flipX: true,
+                            child: CircularProgressIndicator(
+                              value: (widget.sentDuration - value)/3600, 
+                              color: Colors.white, strokeWidth: 3,
+                            )
+                          ) 
+                        ),
+                        Container(
+                          height: size.height * 0.4,
+                          width: size.height * 0.4,
+                          alignment: Alignment.center,
+                          child: Text(timeToString(widget.sentDuration - value), style: const TextStyle(
+                            color: Colors.white, 
+                            fontSize: 60,
+                            fontFamily: 'RobotoMono',
+                            // fontWeight: FontWeight.w500
+                          )
+                        )
+                        )
+                      ],),
+                      Divider(height: SCREEN_WIDTH * 0.1, color: Colors.transparent,),
+                      () {
+                        if (widget.sentDuration - value != 3600 || value == 0) {
+                          return Text(
+                            'Welcome', 
+                            style: TextStyle(
+                              color: Colors.white, 
+                              fontSize: SCREEN_WIDTH * 0.03, 
+                              fontFamily: 'RobotoMono',
+                              // fontWeight: FontWeight.w300
+                            )
+                          );
+                        } else {
+                          return Text(
+                            'Thank you for your time', 
+                            style: TextStyle(
+                              color: Colors.white, 
+                              fontSize: SCREEN_WIDTH * 0.03, 
+                              fontFamily: 'RobotoMono',
+                              // fontWeight: FontWeight.w300
+                            )
+                          );
+                        }
+                      }(),
+                    ],);
+                  }
+                ),
+                Text(
+                  widget.usersName.replaceAll('\n', ' '), 
+                  style: TextStyle(
+                    color: Colors.white, 
+                    fontSize: SCREEN_WIDTH * 0.08,
+                    fontFamily: 'RobotoMono',
+                    // fontWeight: FontWeight.w300,
+                  ),
+                )
+              ],),
+            ],) 
+        ),
+      )
+    ); 
   }
 }

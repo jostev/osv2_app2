@@ -29,7 +29,7 @@ import 'package:flutter/foundation.dart';
 // Remove extra libraries (just_audio_windows)
 
 
-void main() {
+void main() async {
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     if (kReleaseMode) exit(1);

@@ -1,6 +1,9 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:osv2_app2/screens/john.dart';
 import 'package:provider/provider.dart';
 
@@ -20,8 +23,9 @@ import 'package:just_audio/just_audio.dart';
 import 'dart:isolate';
 
 
-const int pumpModeOff = 100;
-const int pumpModeSuper = 102;
+
+const int PUMP_MODE_OFF = 100;
+const int PUMP_MODE_SUPER = 102;
 
 
 class HomeScreen extends StatefulWidget {
@@ -49,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     "10 & 10",
     "Fun",
   ];
-  int selectedSong = 0;
+  ValueNotifier<int> selectedSong = ValueNotifier<int>(0);
   bool isPlaying = false;
   final player = AudioPlayer();
 
@@ -63,29 +67,40 @@ class _HomeScreenState extends State<HomeScreen> {
         SizedBox(
           height: 60,
           width: SCREEN_WIDTH * 0.28,
-          child: TextButton(
-            onPressed: () {
-              _timer.cancel();
-              setState(() {
-                setMusic(music[i]);
-                selectedSong = i;
-              });
-            }, 
-            style: TextButton.styleFrom(
-              backgroundColor: () {
-                if (selectedSong == i) {
-                  return Colors.grey;
-                } else {
-                  return Theme.of(context).hintColor;
-                }
-              }(),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(10)
-                )
-              )
-            ), 
-            child: Text(musicNames[i], style: style),
+          child: ValueListenableBuilder(
+            valueListenable: selectedSong,
+            builder: (context, value, child) {
+              
+              return TextButton(
+                onPressed: () {
+                  if (selectedSong.value == i) {
+                    if (isPlaying) {
+                      player.pause();
+                      isPlaying = !isPlaying;
+                    } else {
+                      player.play();
+                      isPlaying = !isPlaying;
+                    }
+                  } else {
+                    selectedSong.value = i;
+                    setMusic(music[i]);
+                    player.play();
+                    isPlaying = true;
+                  }
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: () {
+                    if (selectedSong.value == i) {
+                      return Colors.grey;
+                    } else {
+                      return Theme.of(context).hintColor;
+                    }
+                  }(),
+                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))
+                ),
+                child: Text(musicNames[i], style: style),
+              );
+            }
           )
         )
       );
@@ -104,10 +119,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // )
 
   // SESSION TIMER LOGIC //
-  int _duration = 3600;
+  final ValueNotifier<int> _duration = ValueNotifier<int>(3600);
   final Timer _timer = Timer(const Duration(seconds: 3600), () {});
   bool timerStart = false;
-
+  
   void startTimer() {
     // session timer
     const timeInc = Duration(seconds: 1);
@@ -115,19 +130,15 @@ class _HomeScreenState extends State<HomeScreen> {
     Timer _timer = Timer.periodic(
       timeInc,
       (Timer timer) async {
-        if (_duration == 0) {
-          setState(() {
-            _duration = 3600;
-            player.stop();
-            timer.cancel();
-          });
+        if (_duration.value == 0) {
+          _duration.value = 3600;
+          player.stop();
+          timer.cancel();
         } else {
-          setState(() {
-            _duration--;
-          });
+          _duration.value--;
         }
         if (!timerStart) {
-          _duration = 3600;
+          _duration.value = 3600;
           timer.cancel();
         }
       },
@@ -135,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // PUMP TIMER LOGIC //
-  int _pumpDuration = 600;
+  final ValueNotifier<int> _pumpDuration = ValueNotifier<int>(600);
   final Timer pumpTimer = Timer(const Duration(seconds: 600), () {});
   bool pumpTimerStart = false;
 
@@ -146,22 +157,18 @@ class _HomeScreenState extends State<HomeScreen> {
     Timer pumpTimer = Timer.periodic(
       timeInc,
       (Timer timer) {
-        if (_pumpDuration == 0) {
-          setState(() {
-            _pumpDuration = 600;
-            pumpTimerStart = false;
-            LocalServices().sendPostCommandRequest(
-              100, 0, 0, 0, 0, 0
-            );
-            timer.cancel();
-          });
+        if (_pumpDuration.value == 0) {
+          _pumpDuration.value = 600;
+          pumpTimerStart = false;
+          LocalServices().sendPostCommandRequest(
+            100, 0, 0, 0, 0, 0
+          );
+          timer.cancel();
         } else {
-          setState(() {
-            _pumpDuration--;
-          });
+          _pumpDuration.value--;
         }
         if (!pumpTimerStart) {
-          _pumpDuration = 600;
+          _pumpDuration.value = 600;
           pumpTimerStart = false;
           LocalServices().sendPostCommandRequest(
             100, 0, 0, 0, 0, 0
@@ -184,32 +191,74 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final nameController = TextEditingController();
 
+  final ValueNotifier<int> _pollCount = ValueNotifier<int>(0);
   Poll? poll;
-  getData () async
-  {
+  Future <Poll?> getData () async {
     print("getData");
-    poll = await LocalServices().getPoll();
-    if (poll != null) {
-      ph = poll!.ph;
-      ch = poll!.ch;
-      orp = poll!.orp;
-      temp = poll!.temp;
-    } else {
-      ph = 0;
-      ch = 0;
-      orp = 0;
-      temp = 0;
+    _pollCount.value++;
+    return LocalServices().getPoll();
+    // LocalServices().getPoll().then((result) {
+    //   poll = result;
+    //   _pollCount.value++;
+    //   if (poll != null) {
+    //     ph = poll!.ph;
+    //     ch = poll!.ch;
+    //     orp = poll!.orp;
+    //     temp = poll!.temp;
+    //   } else {
+    //     ph = 0;
+    //     ch = 0;
+    //     orp = 0;
+    //     temp = 0;
+    //   }
+    // });
+  }
+
+  // Function to be run inside the isolate
+  void _pollWorker(SendPort sendPort) async {
+    ReceivePort port = ReceivePort();
+    sendPort.send(port.sendPort);
+
+    // Listen for messages from the main isolate
+    await for (var msg in port) {
+      if (msg is SendPort) {
+        // When a message is received, run getPoll and send the result back to the main isolate
+        final pollResult = await LocalServices().getPoll();
+        msg.send(pollResult.toJson());
+      }
     }
   }
 
+  Future<void> runGetPollInIsolate() async {
+    ReceivePort receivePort = ReceivePort();
+    await Isolate.spawn(_pollWorker, receivePort.sendPort);
+
+    // Receive the SendPort from the worker
+    var sendPort = await receivePort.first as SendPort;
+
+    // Create another ReceivePort to receive the poll result from the worker
+    ReceivePort responsePort = ReceivePort();
+    // Send the SendPort of this new ReceivePort to the worker
+    sendPort.send(responsePort.sendPort);
+
+    // Wait for the poll result from the worker
+    var pollResult = await responsePort.first as String;
+    var poll = pollFromJson(pollResult);
+
+    ph = poll.ph;
+    ch = poll.ch;
+    orp = poll.orp;
+    temp = poll.temp;
+  }
+
+  Timer pollTimer = Timer(const Duration(seconds: 1), () {});
   late FocusNode focusNode;
   @override void initState() {
     super.initState();
     focusNode = FocusNode();
-    getData();
+    // getData();
+    pollTimer = Timer.periodic(const Duration(seconds: 8), (Timer t) => _pollCount.value++);
   }
-
-  Stream<Poll> pollStream = Stream.empty();
 
   @override
   void dispose() {
@@ -217,6 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
     nameController.dispose();
     _timer.cancel();
     pumpTimer.cancel();
+    pollTimer.cancel();
     super.dispose();
   }
   
@@ -245,9 +295,6 @@ class _HomeScreenState extends State<HomeScreen> {
       fontSize: SCREEN_WIDTH * 0.015, 
       color: Theme.of(context).hintColor
     );
-
-    
-    
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -287,47 +334,52 @@ class _HomeScreenState extends State<HomeScreen> {
                   //
                   // SESSION TIMER
                   //
-
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        color: Colors.transparent,
-                        height: SCREEN_WIDTH * 0.21,
-                        width: SCREEN_WIDTH * 0.21,
-                        child: Transform.flip(
-                          flipX: true,
-                          child: CircularProgressIndicator(
-                            value: _duration/3600, 
-                            backgroundColor: Colors.transparent, 
-                            color: Theme.of(context).primaryColor, 
-                            strokeWidth: 8
-                          )
-                        )
-                      ),
-                      Container(
-                        color: Colors.transparent,
-                        height: SCREEN_HEIGHT * 0.4,
-                        width: SCREEN_WIDTH * 0.28,
-                        child: TextButton(
-                          onPressed: () {
-                            if (timerStart) {
-                              _timer.cancel();
-                              player.stop();
-                              timerStart = !timerStart;
-                            } else {
-                              startTimer();
-                              player.play();
-                              timerStart = !timerStart;
-                            }
-                          },
-                          style: TextButton.styleFrom(
-                            shape: const CircleBorder()
+                  ValueListenableBuilder(
+                    valueListenable: _duration, 
+                    builder: (context, value, child) {
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            color: Colors.transparent,
+                            height: SCREEN_WIDTH * 0.21,
+                            width: SCREEN_WIDTH * 0.21,
+                            child: Transform.flip(
+                              flipX: true,
+                              child: CircularProgressIndicator(
+                                value: _duration.value / 3600, 
+                                backgroundColor: Colors.transparent, 
+                                color: Theme.of(context).primaryColor, 
+                                strokeWidth: 8
+                              )
+                            )
                           ),
-                          child: Text(timeToString(_duration), style: guage1,),
-                        ),
-                      ),
-                  ],),
+                          Container(
+                            color: Colors.transparent,
+                            height: SCREEN_HEIGHT * 0.4,
+                            width: SCREEN_WIDTH * 0.28,
+                            child: TextButton(
+                              onPressed: () {
+                                if (timerStart) {
+                                  _timer.cancel();
+                                  player.stop();
+                                  timerStart = !timerStart;
+                                } else {
+                                  startTimer();
+                                  player.play();
+                                  timerStart = !timerStart;
+                                }
+                              },
+                              style: TextButton.styleFrom(
+                                shape: const CircleBorder()
+                              ),
+                              child: Text(timeToString(_duration.value), style: guage1,),
+                            ),
+                          ),
+                      ],);
+                    }
+                  ),
+                  
                   Divider(
                     height: SCREEN_HEIGHT * 0.017, 
                     color: Colors.transparent
@@ -465,39 +517,66 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     [SCREEN_WIDTH, SCREEN_HEIGHT]
                   ),
-
-                  StreamBuilder(
-                    stream: LocalServices().getPollStream(), 
-                    initialData: null, 
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text("Error: ${snapshot.error}");
-                      }
-                      if (snapshot.hasData && snapshot.data == 'done') {
-                        return const Text("Done");
-                      }
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.none:
-                          return const Text("No connection");
-                        case ConnectionState.waiting:
-                          return const Text("Waiting...");
-                        case ConnectionState.active:
-                          if (snapshot.hasData) {
-                            print(snapshot);
-                            ph = snapshot.data!.ph;
-                            ch = snapshot.data!.ch;
-                            if (orp < 20000) orp = snapshot.data!.orp;
+                  ValueListenableBuilder(
+                    valueListenable: _pollCount, 
+                    builder: (context, value, child) {
+                      return FutureBuilder<Poll?>(
+                        future: getData(), 
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.hasData) {
+                              ph = snapshot.data!.ph;
+                              ch = snapshot.data!.ch;
+                              orp = snapshot.data!.orp;
+                              return barChartValues(
+                                context, 
+                                SCREEN_HEIGHT, 
+                                SCREEN_WIDTH, 
+                                ph, 
+                                ch, 
+                                orp
+                              );
+                            } else {
+                              return barChartValues(
+                                context, 
+                                SCREEN_HEIGHT, 
+                                SCREEN_WIDTH, 
+                                0, 
+                                0, 
+                                0
+                              );
+                            }
+                          } else {
+                            return barChartValues(
+                              context, 
+                              SCREEN_HEIGHT, 
+                              SCREEN_WIDTH, 
+                              0, 
+                              0, 
+                              0
+                            );
                           }
-                          
-                          return barChartValues(context, SCREEN_HEIGHT, SCREEN_WIDTH, ph, ch, orp);
-                        case ConnectionState.done:
-                          return const Text("Done");
-                      }
+                        }
+                      );
                     }
                   )
+                  
+                  // ValueListenableBuilder(
+                  //   valueListenable: _pollCount, 
+                  //   builder: (context, value, child) {
+                  //     return barChartValues(
+                  //       context, 
+                  //       SCREEN_HEIGHT, 
+                  //       SCREEN_WIDTH, 
+                  //       ph, 
+                  //       ch, 
+                  //       orp
+                  //     );
+                  //   }
+                  // ),
+                  
+                  
                 ]),
-                
-                
               ),
             ],),
             
@@ -588,7 +667,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context, 
                                 MaterialPageRoute(builder: (context) => 
                                 ScreenSaver(
-                                  sentDuration: _duration, 
+                                  sentDuration: _duration.value, 
                                   timerStarted: timerStart, 
                                   usersName: nameController.text,
                                   focusNode: focusNode,
@@ -657,60 +736,65 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: SCREEN_HEIGHT * 0.4,
                         width: SCREEN_WIDTH * 0.28 * 0.8 / 3,  
                         child: Column(children: [
-                          FloatingActionButton.large(
-                            heroTag: "pmp_btn",
-                            onPressed: () {
-                              if (pumpTimerStart) {
-                                pumpTimer.cancel();
-                                pumpTimerStart = !pumpTimerStart;
-                                print("off");
-                                try {
-                                  print("sent pump off");
-                                  LocalServices().sendPostCommandRequest(
-                                    pumpModeOff, 0, 0, 0, 0, 0
-                                  );
-                                } on Exception catch (e) {
-                                  print(e);
-                                }
-                              } else {
-                                pumpTimerStart = !pumpTimerStart;
-                                print("on");
-                                try {
-                                  print("sent pump on");
-                                  LocalServices().sendPostCommandRequest(
-                                    pumpModeSuper, 0, 0, 0, 0, 0
-                                  );
-                                } on Exception catch (e) {
-                                  print(e);
-                                }
-                                startPumpTimer();
-                              }
-                            },
-                            foregroundColor: Theme.of(context).primaryColor,
-                            backgroundColor: Colors.transparent,
-                            shape: CircleBorder(
-                              side: BorderSide(
-                                color: Theme.of(context).primaryColor, 
-                                width: 5
-                              )
-                            ),
-                            elevation: 0,
-                            focusElevation: 0,
-                            hoverElevation: 0,
-                            child: () {
-                              if (pumpTimerStart) {
-                                return Text(
-                                  timeToString(_pumpDuration), 
-                                  style: TextStyle(
-                                    fontSize: 25, 
+                          ValueListenableBuilder(
+                            valueListenable: _pumpDuration,
+                            builder: (context, value, child) {
+                              return FloatingActionButton.large(
+                                heroTag: "pmp_btn",
+                                onPressed: () {
+                                  if (pumpTimerStart) {
+                                    pumpTimer.cancel();
+                                    pumpTimerStart = !pumpTimerStart;
+                                    print("off");
+                                    try {
+                                      print("sent pump off");
+                                      LocalServices().sendPostCommandRequest(
+                                        PUMP_MODE_OFF, 0, 0, 0, 0, 0
+                                      );
+                                    } on Exception catch (e) {
+                                      print(e);
+                                    }
+                                  } else {
+                                    pumpTimerStart = !pumpTimerStart;
+                                    print("on");
+                                    try {
+                                      print("sent pump on");
+                                      LocalServices().sendPostCommandRequest(
+                                        PUMP_MODE_SUPER, 0, 0, 0, 0, 0
+                                      );
+                                    } on Exception catch (e) {
+                                      print(e);
+                                    }
+                                    startPumpTimer();
+                                  }
+                                },
+                                foregroundColor: Theme.of(context).primaryColor,
+                                backgroundColor: Colors.transparent,
+                                shape: CircleBorder(
+                                  side: BorderSide(
                                     color: Theme.of(context).primaryColor, 
-                                    fontWeight: FontWeight.w700
+                                    width: 5
                                   )
-                                );
-                              } else {
-                                return const Icon(Icons.plumbing);
-                              }
-                            }(),
+                                ),
+                                elevation: 0,
+                                focusElevation: 0,
+                                hoverElevation: 0,
+                                child: () {
+                                  if (pumpTimerStart) {
+                                    return Text(
+                                      timeToString(_pumpDuration.value), 
+                                      style: TextStyle(
+                                        fontSize: 25, 
+                                        color: Theme.of(context).primaryColor, 
+                                        fontWeight: FontWeight.w700
+                                      )
+                                    );
+                                  } else {
+                                    return const Icon(Icons.plumbing);
+                                  }
+                                }(),
+                              );
+                            }
                           ),
                           const Divider(
                             height: 9, 

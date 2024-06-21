@@ -12,6 +12,7 @@ import 'package:osv2_app2/utils/logo.dart';
 import 'package:osv2_app2/utils/math.dart';
 import 'package:osv2_app2/utils/custom_bar_chart.dart';
 import 'package:osv2_app2/utils/custom_colors.dart';
+import 'package:osv2_app2/utils/music_buttons.dart';
 
 import 'package:osv2_app2/services/theme_provider.dart';
 import 'package:osv2_app2/services/local_services.dart';
@@ -42,83 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int orp = 1;
   double temp = 1;
   String? error;
-  // MUSIC PLAYER //
-  List<String> music = [
-    "assets/music/CC_1HR.mp3",
-    "assets/music/CC_10&10.mp3",
-    "assets/music/fun.mp3",
-  ];
-  List<String> musicNames = [
-    "1 Hour",
-    "10 & 10",
-    "Fun",
-  ];
-  ValueNotifier<int> selectedSong = ValueNotifier<int>(0);
-  bool isPlaying = false;
-  final player = AudioPlayer();
 
-  void setMusic(String asset) {
-    player.setAsset(asset);
-  }
-  List<Widget> getMusicButtons(TextStyle style) {
-    List<Widget> buttons = [];
-    for (int i = 0; i < music.length; i++) {
-      buttons.add(
-        SizedBox(
-          height: 60,
-          width: SCREEN_WIDTH * 0.28,
-          child: ValueListenableBuilder(
-            valueListenable: selectedSong,
-            builder: (context, value, child) {
-              
-              return TextButton(
-                onPressed: () {
-                  if (selectedSong.value == i) {
-                    if (isPlaying) {
-                      player.pause();
-                      isPlaying = !isPlaying;
-                    } else {
-                      player.play();
-                      isPlaying = !isPlaying;
-                    }
-                  } else {
-                    selectedSong.value = i;
-                    setMusic(music[i]);
-                    player.play();
-                    isPlaying = true;
-                  }
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: () {
-                    if (selectedSong.value == i) {
-                      return Colors.grey;
-                    } else {
-                      return Theme.of(context).hintColor;
-                    }
-                  }(),
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))
-                ),
-                child: Text(musicNames[i], style: style),
-              );
-            }
-          )
-        )
-      );
-      buttons.add(const Divider(height: 1, color: Colors.transparent));
-    }
-    return buttons;
-  }
-
-  //   child: TextButton(
-  //     onPressed: () {}, 
-  //     style: TextButton.styleFrom(
-  //       backgroundColor: Theme.of(context).hintColor,
-  //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))
-  //     ), 
-  //     child: Text("Music", style: btn1)),
-  // )
-
+  //
   // SESSION TIMER LOGIC //
+  //
   final ValueNotifier<int> _duration = ValueNotifier<int>(3600);
   final Timer _timer = Timer(const Duration(seconds: 3600), () {});
   bool timerStart = false;
@@ -363,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (timerStart) {
                                   _timer.cancel();
                                   player.stop();
+                                  player.seek(const Duration(seconds: 0));
                                   timerStart = !timerStart;
                                 } else {
                                   startTimer();
@@ -428,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     child: SingleChildScrollView(
                       child: Column(
-                        children: getMusicButtons(btn1)
+                        children: buildMusicButtons(btn1, SCREEN_WIDTH, SCREEN_HEIGHT)
                       ),
                     ),
                   )
@@ -537,45 +466,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 orp
                               );
                             } else {
-                              return barChartValues(
-                                context, 
-                                SCREEN_HEIGHT, 
-                                SCREEN_WIDTH, 
-                                0, 
-                                0, 
-                                0
-                              );
+                              return Text("Error: ${snapshot.error}");
                             }
                           } else {
-                            return barChartValues(
-                              context, 
-                              SCREEN_HEIGHT, 
-                              SCREEN_WIDTH, 
-                              0, 
-                              0, 
-                              0
-                            );
+                            return const Text("Not connected.");
                           }
                         }
                       );
                     }
                   )
-                  
-                  // ValueListenableBuilder(
-                  //   valueListenable: _pollCount, 
-                  //   builder: (context, value, child) {
-                  //     return barChartValues(
-                  //       context, 
-                  //       SCREEN_HEIGHT, 
-                  //       SCREEN_WIDTH, 
-                  //       ph, 
-                  //       ch, 
-                  //       orp
-                  //     );
-                  //   }
-                  // ),
-                  
-                  
                 ]),
               ),
             ],),

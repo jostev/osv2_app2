@@ -8,6 +8,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import '../model/poll.dart';
@@ -19,23 +20,19 @@ class LocalServices
   var client = http.Client();
 
   //get
-  Future<Poll> getPoll() async
-  {
-    // print(json);
+  Future<Poll> getPoll() {
     var api = '/poll';
     var url = Uri.parse(baseUrl + api);
-    try {
-      final response = await client.get(url);
-      final json = response.body;
-      // print(json);
+    return client.get(url).then((response) {
+      var json = response.body;
       return pollFromJson(json);
-    } finally {
-      // if (e is SocketException) {
-      //   return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e");
-      // }
-      // return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Caught error: $e");
+    }).catchError((e) {
+      if (e is SocketException) {
+        return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e");
+      }
+      return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Caught error: $e");
       // client.close();
-    }
+    });
   }
 
   Future<dynamic> sendPostCommandRequest(int cmd, int cmddata_1, int cmddata_2, int cmddata_3, int cmddata_4, int cmddata_5) async {

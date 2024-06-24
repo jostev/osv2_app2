@@ -20,8 +20,9 @@ import 'package:flutter/foundation.dart';
 //
 // TODO LIST
 //
-// Potentially separate all widgets into their own files
-// Use providers
+// Find out how to reduce number of lines in home.dart
+// ValueNotifiers or providers?
+// reduce build time for music buttons
 //
 // LATER
 //

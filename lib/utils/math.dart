@@ -1,5 +1,6 @@
 import "dart:math";
 import "dart:ui";
+import "package:flutter/material.dart";
 import 'package:flutter_color_models/flutter_color_models.dart';
 
 double root(double x, double n) {
@@ -63,4 +64,14 @@ double roundToDecimalPlace(double x, int n) {
 
 double abs(double x) {
   return x < 0 ? -x : x;
+}
+
+double normDist(double x, double m, double se) {
+  double xa = abs((x-m)/se);
+  if (xa < 1) {
+    return 1 - 0.4*xa*xa;
+  } else if (xa < 3) {
+    return 0.15*(xa - 3)*(xa - 3);
+  }
+  return 0;
 }

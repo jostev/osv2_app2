@@ -1,27 +1,28 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:osv2_app2/screens/john.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:osv2_app2/utils/icon_button.dart';
 import 'package:osv2_app2/utils/logo.dart';
 import 'package:osv2_app2/utils/math.dart';
-import 'package:osv2_app2/utils/custom_bar_chart.dart';
+import 'package:osv2_app2/utils/bar_chart.dart';
 import 'package:osv2_app2/utils/custom_colors.dart';
 import 'package:osv2_app2/utils/music_buttons.dart';
 
 import 'package:osv2_app2/services/theme_provider.dart';
 import 'package:osv2_app2/services/local_services.dart';
+
 import 'package:osv2_app2/model/poll.dart';
 
 import 'package:osv2_app2/screens/screensaver.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:osv2_app2/screens/john.dart';
 
-import 'dart:isolate';
 
 
 
@@ -73,7 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //
   // PUMP TIMER LOGIC //
+  //
   final ValueNotifier<int> _pumpDuration = ValueNotifier<int>(600);
   final Timer pumpTimer = Timer(const Duration(seconds: 600), () {});
   bool pumpTimerStart = false;
@@ -119,64 +122,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final nameController = TextEditingController();
 
-  final ValueNotifier<int> _pollCount = ValueNotifier<int>(0);
-  Poll? poll;
-  Future <Poll?> getData () async {
-    print("getData");
-    _pollCount.value++;
-    return LocalServices().getPoll();
-    // LocalServices().getPoll().then((result) {
-    //   poll = result;
-    //   _pollCount.value++;
-    //   if (poll != null) {
-    //     ph = poll!.ph;
-    //     ch = poll!.ch;
-    //     orp = poll!.orp;
-    //     temp = poll!.temp;
-    //   } else {
-    //     ph = 0;
-    //     ch = 0;
-    //     orp = 0;
-    //     temp = 0;
-    //   }
-    // });
-  }
-
-  // Function to be run inside the isolate
-  void _pollWorker(SendPort sendPort) async {
-    ReceivePort port = ReceivePort();
-    sendPort.send(port.sendPort);
-
-    // Listen for messages from the main isolate
-    await for (var msg in port) {
-      if (msg is SendPort) {
-        // When a message is received, run getPoll and send the result back to the main isolate
-        final pollResult = await LocalServices().getPoll();
-        msg.send(pollResult.toJson());
-      }
-    }
-  }
-
-  Future<void> runGetPollInIsolate() async {
-    ReceivePort receivePort = ReceivePort();
-    await Isolate.spawn(_pollWorker, receivePort.sendPort);
-
-    // Receive the SendPort from the worker
-    var sendPort = await receivePort.first as SendPort;
-
-    // Create another ReceivePort to receive the poll result from the worker
-    ReceivePort responsePort = ReceivePort();
-    // Send the SendPort of this new ReceivePort to the worker
-    sendPort.send(responsePort.sendPort);
-
-    // Wait for the poll result from the worker
-    var pollResult = await responsePort.first as String;
-    var poll = pollFromJson(pollResult);
-
-    ph = poll.ph;
-    ch = poll.ch;
-    orp = poll.orp;
-    temp = poll.temp;
+  final ValueNotifier poll = ValueNotifier(Poll(ph: 0, ch: 0, orp: 0, temp: 0, error: null));
+  final ValueNotifier<bool> pollEnd = ValueNotifier<bool>(false);
+  
+  getData () async {
+    poll.value = LocalServices().getPoll();
   }
 
   Timer pollTimer = Timer(const Duration(seconds: 1), () {});
@@ -184,8 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override void initState() {
     super.initState();
     focusNode = FocusNode();
-    // getData();
-    pollTimer = Timer.periodic(const Duration(seconds: 8), (Timer t) => _pollCount.value++);
+    // pollEnd.value = !pollEnd.value;
+    getData();
+    pollTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) => getData());
   }
 
   @override
@@ -438,44 +389,72 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 30, 
                   bottom: 30
                 ),
-                child: Stack(children: [
-                  barChartBG(context, 
-                    (
-                      Theme.of(context).colorScheme.secondary 
-                      == CustomColors.btn1
-                    ),
-                    [SCREEN_WIDTH, SCREEN_HEIGHT]
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: _pollCount, 
-                    builder: (context, value, child) {
-                      return FutureBuilder<Poll?>(
-                        future: getData(), 
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.done) {
-                            if (snapshot.hasData) {
-                              ph = snapshot.data!.ph;
-                              ch = snapshot.data!.ch;
-                              orp = snapshot.data!.orp;
-                              return barChartValues(
-                                context, 
-                                SCREEN_HEIGHT, 
-                                SCREEN_WIDTH, 
-                                ph, 
-                                ch, 
-                                orp
-                              );
-                            } else {
-                              return Text("Error: ${snapshot.error}");
-                            }
-                          } else {
-                            return const Text("Not connected.");
-                          }
+                child:ValueListenableBuilder(
+                  valueListenable: poll, 
+                  builder: (context, value, child) {
+                    return FutureBuilder<Poll?>(
+                      future: poll.value, 
+                      builder: (context, snapshot) {
+                        TextStyle chart1 = TextStyle(
+                          fontSize: 30, 
+                          color: Theme.of(context).hintColor, 
+                          fontWeight: FontWeight.w700
+                        );
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return improvedBarChart(
+                            context,
+                            [
+                              BarData(title: "PH", value: ph, max: 14, style: chart1),
+                              BarData(title: "ORP", value: orp, max: 1000, style: chart1),
+                              BarData(title: "CH", value: ch, max: 1000, style: chart1),
+                            ], 
+                            BarVisualData(
+                              valueStyle: TextStyle(fontSize: 40, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
+                              titleStyle: TextStyle(fontSize: 40, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
+                              thickness: 20, 
+                              correctColor: CustomColors.bar1, 
+                              wrongColor: CustomColors.bar4
+                            ),
+                            SCREEN_HEIGHT * 0.85 * 0.65, 
+                            SCREEN_WIDTH * 0.44 / 3 - 20
+                          );
                         }
-                      );
-                    }
-                  )
-                ]),
+                        if (snapshot.hasError) {
+                          return Text("Error: ${snapshot.error}");
+                        }
+                        if (snapshot.hasData) {
+                          String? error = snapshot.data!.error;
+                          if (error != null) {
+                            return Text(error);
+                          }
+                          ph = snapshot.data!.ph;
+                          ch = snapshot.data!.ch;
+                          orp = snapshot.data!.orp;
+                          temp = snapshot.data!.temp;
+                          pollEnd.value = !pollEnd.value;
+                          return improvedBarChart(
+                            context,
+                            [
+                              BarData(title: "PH", value: ph, max: 14, style: chart1),
+                              BarData(title: "ORP", value: orp, max: 1000, style: chart1),
+                              BarData(title: "CH", value: ch, max: 1000, style: chart1),
+                            ], 
+                            BarVisualData(
+                              valueStyle: TextStyle(fontSize: 20, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
+                              titleStyle: TextStyle(fontSize: 20, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
+                              thickness: 20, 
+                              correctColor: CustomColors.bar1, 
+                              wrongColor: CustomColors.bar4
+                            ),
+                            SCREEN_HEIGHT * 0.85 * 0.65, 
+                            SCREEN_WIDTH * 0.44 / 3 - 20
+                          );
+                        }
+                        return const Text("No data");
+                      }
+                    );
+                  }
+                )
               ),
             ],),
             
@@ -731,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],)
       ],),
-  );
+    );
   }
 }
 

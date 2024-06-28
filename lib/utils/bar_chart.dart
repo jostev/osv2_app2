@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:osv2_app2/utils/math.dart';
-import 'custom_colors.dart';
 
 class BarData {
   final String title;
@@ -14,66 +13,6 @@ class BarData {
     required this.max,
     required this.style,
   });
-}
-
-Widget bar(BuildContext context, BarData barData, double height, double width) {
-  double percent = barData.value / barData.max;
-  if (percent > 1) percent = 1;
-  double thickness = width / 4;
-  double adjustedHeight = height * percent * 9 / 14;
-  if (adjustedHeight < thickness) adjustedHeight = thickness;
-
-  Color color = lerpColor(CustomColors.bar1, CustomColors.bar4, percent);
-
-
-  return Container(
-    width: width,
-    height: height,
-    alignment: Alignment.bottomCenter,
-    child: Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text("${barData.value}", style: const TextStyle(fontSize: 40, color: Colors.transparent)),
-            Container(
-              width: thickness,
-              height: height * 9 / 14,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                // border: Border.all(width: 1.0),
-                borderRadius: BorderRadius.all(Radius.circular(width/2.0)),
-              ),
-            ),
-            Text(barData.title, style: barData.style),
-          ],
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text("${barData.value}", style: TextStyle(fontSize: 40, color: color, fontWeight: FontWeight.bold)),
-            Container(
-              width: thickness,
-              height: adjustedHeight,
-              decoration: BoxDecoration(
-                color: color,
-                // border: Border.all(width: 1.0),
-                borderRadius: BorderRadius.all(Radius.circular(width/2.0)),
-              ),
-            ),
-            Text(barData.title, style: barData.style),
-          ],
-        )
-      ],
-    )
-    
-  );
-}
-
-Widget barChart(BuildContext context, List<BarData> bars, double height, double width) {
-  return Row(
-    children: bars.map((barData) => bar(context, barData, height, width)).toList(),
-  );
 }
 
 class BarVisualData {
@@ -180,8 +119,15 @@ Widget improvedBar(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             valueContainer("${barData.value}"),
+            // AnimatedSize(
+            //   duration: visualData.animationDuration ?? Duration.zero,
+            //   child: Container(
+
+            //   ),
+            // ),
             AnimatedContainer(
               duration: visualData.animationDuration ?? Duration.zero,
+              curve: Curves.easeInOut,
               width: thickness,
               height: adjustedHeight,
               decoration: BoxDecoration(

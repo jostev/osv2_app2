@@ -14,19 +14,22 @@ import 'package:http/http.dart' as http;
 import '../model/poll.dart';
 
 const String baseUrl = 'http://10.1.2.1';
+bool isConnected = false;
 
 class LocalServices
 {
   var client = http.Client();
-
+  
   //get
   Future<Poll> getPoll() {
     var api = '/poll';
     var url = Uri.parse(baseUrl + api);
     return client.get(url).then((response) {
+      isConnected = true;
       var json = response.body;
       return pollFromJson(json);
     }).catchError((e) {
+      isConnected = false;
       if (e is SocketException) {
         return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e");
       }
@@ -41,21 +44,23 @@ class LocalServices
 
     // Create the data as a JSON object
     var data = {
-      'cmd': cmd,
-      'cmd_data_1': cmddata_1,
-      'cmd_data_2': cmddata_2,
-      'cmd_data_3': cmddata_3,
-      'cmd_data_4': cmddata_4,
-      'cmd_data_5': cmddata_5,
+      "cmd": cmd.toString(),
+      "cmd_data_1": cmddata_1.toString(),
+      "cmd_data_2": cmddata_2.toString(),
+      "cmd_data_3": cmddata_3.toString(),
+      "cmd_data_4": cmddata_4.toString(),
+      "cmd_data_5": cmddata_5.toString(),
     };
 
     var payload = json.encode(data);
 
-    var response = await client.post(url, body: payload);
-
-    return response.body;
+    try {
+      isConnected = true;
+      var response = await client.post(url, body: payload);
+      return response.body;
+    } on Exception catch (e) {
+      isConnected = false;
+      print('Caught error: $e');
+    }
   }
-
-  
-
 }

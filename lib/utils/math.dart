@@ -58,12 +58,24 @@ double intNoise(double x) {
   return (sin(2 * x) + sin(pi * x)) / 2;
 }
 
-double roundToDecimalPlace(double x, int n) {
-  return  (x * pow(10, n)).roundToDouble()/pow(10, n);
+String roundToDecimalPlace(double x, int n) {
+  String number = ((x * pow(10, n)).roundToDouble()/pow(10, n)).toString();
+  while (number.split('.')[1].length < n) {
+    number += '0';
+  }
+  return number;
 }
 
 double abs(double x) {
   return x < 0 ? -x : x;
+}
+
+double avgList(List<num> list) {
+  num sum = 0;
+  for (var i in list) {
+    sum += i;
+  }
+  return sum / list.length;
 }
 
 double normDist(double x, double m, double se) {

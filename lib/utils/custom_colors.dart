@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomColors {
   static const Color bg1 = Colors.white;
-  static const Color bg2 = Color.fromARGB(255, 240, 240, 240);
+  static const Color bg2 = Color.fromARGB(255, 227, 227, 227);
 
   static const Color btn1 = Color.fromARGB(255, 48, 48, 48);
   // static const Color btn2 = Color.fromARGB(255, 53, 207, 209);

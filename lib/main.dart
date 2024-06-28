@@ -22,7 +22,7 @@ import 'package:flutter/foundation.dart';
 //
 // Find out how to reduce number of lines in home.dart
 // ValueNotifiers or providers?
-// reduce build time for music buttons
+// way to check if pump on
 //
 // LATER
 //

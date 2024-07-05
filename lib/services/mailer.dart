@@ -19,10 +19,22 @@ Future<File> writeCSV(Poll poll) async {
   final file = await _localFile;
   final time = DateTime.now();
   List<String> dateTime = time.toString().split(' ');
-  
-  if (await file.readAsString() == "") return file.writeAsString("date,time,ph,orp,ch\n$time,${poll.ph},${poll.orp},${poll.ch}");
+  String writeStr ="";// "${dateTime[0]},${dateTime[1]},${poll.ph},${poll.orp},${poll.ch}";
+
+  if (await file.readAsString() == "") writeStr = "date,time,ph,orp,ch\n";
+
+  if (poll.error != null) {
+    writeStr = "\n${dateTime[0]},${dateTime[1]},${poll.error},,,";
+    return file.writeAsString(
+      writeStr,
+      mode: FileMode.append
+    );
+  }
+
+  writeStr += "\n${dateTime[0]},${dateTime[1]},${poll.ph},${poll.orp},${poll.ch}";
+
   return file.writeAsString(
-    "\n${dateTime[0]},${dateTime[1]},${poll.ph},${poll.orp},${poll.ch}",
+    writeStr,
     mode: FileMode.append
   );
 }

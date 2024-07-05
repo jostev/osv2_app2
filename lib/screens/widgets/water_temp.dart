@@ -42,13 +42,13 @@ Widget buildWaterTempMeter(context, SCREEN_HEIGHT, SCREEN_WIDTH, poll, temp) {
                 return FutureBuilder<Poll?>(
                   future: poll.value, 
                   builder: (context, snapshot) {
-                    String displayTemp = roundToDecimalPlace(avgList(temp), 2);
+                    String displayTemp = roundToDecimalPlace(avgList(temp), 1);
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text("$displayTemp °C", style: guage1,);
+                      return Text("$displayTemp°C", style: guage1,);
                     }
                     if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                       // temp = snapshot.data!.temp;
-                      return Text("$displayTemp °C", style: guage1,);
+                      return Text("$displayTemp°C", style: guage1,);
                     }
                     if (snapshot.hasError) {  
                       return Text("err", style: guage1);

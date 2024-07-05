@@ -206,7 +206,7 @@ with SingleTickerProviderStateMixin {
             children: [
               Image.asset("assets/images/bg_image.jpeg", fit: BoxFit.fitWidth),
               Container(color: const Color.fromARGB(77, 0, 0, 0),),
-              const WaveAnimation(),
+              //const WaveAnimation(),
               Column(children: [
                 const Divider(height: 100, color: Colors.transparent,),
                 ValueListenableBuilder(

@@ -59,6 +59,12 @@ Widget improvedBar(
   // print(dist);
   Color barColor = lerpColor(visualData.wrongColor, visualData.correctColor, dist);
 
+  String displayValue = "";
+  if (barData.value%1 == 0) {
+    displayValue = barData.value.toString();
+  } else {
+    displayValue = roundToDecimalPlace(barData.value.toDouble(), 2);
+  }
   TextStyle valueStyle = visualData.valueStyle;
   valueStyle = TextStyle(
     color: barColor,
@@ -75,7 +81,7 @@ Widget improvedBar(
   if (adjustedHeight < thickness) adjustedHeight = thickness;
   
   valueContainer([String? child]) {
-    if (child == null) return SizedBox(width: 3 * (valueStyle.fontSize ?? 0), height: 1.5 * (valueStyle.fontSize ?? 0));
+    if (child == null) return SizedBox(width: 3 * (valueStyle.fontSize ?? 0), height: 1.1 * (valueStyle.fontSize ?? 0));
     return Container(
       width: 3 * (valueStyle.fontSize ?? 0),
       height: 1.5 * (valueStyle.fontSize ?? 0),
@@ -118,7 +124,7 @@ Widget improvedBar(
         Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            valueContainer("${barData.value}"),
+            valueContainer(displayValue),
             // AnimatedSize(
             //   duration: visualData.animationDuration ?? Duration.zero,
             //   child: Container(

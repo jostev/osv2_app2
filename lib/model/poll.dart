@@ -3,6 +3,7 @@
 //     final poll = pollFromJson(jsonString);
 
 import 'dart:convert';
+
 // import 'dart:ffi';
 
 Poll pollFromJson(String str) => Poll.fromJson(json.decode(str));
@@ -15,6 +16,7 @@ class Poll {
     int orp;
     double temp;
     dynamic error;
+    int mode;
 
     Poll({
         required this.ph,
@@ -22,6 +24,7 @@ class Poll {
         required this.orp,
         required this.temp,
         required this.error,
+        required this.mode,
     });
 
     factory Poll.fromJson(Map<String, dynamic> json) => Poll(
@@ -29,8 +32,8 @@ class Poll {
         ch: double.parse(json["CH"]),
         orp: int.parse(json["ORP"]),
         temp: double.parse(json["CH"]),
-        
         error: json["error"],
+        mode: int.parse(json["MODE"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -38,5 +41,6 @@ class Poll {
         "CH": ch,
         "ORP": orp,
         "TEMP": temp,
+        "MODE": mode
     };
 }

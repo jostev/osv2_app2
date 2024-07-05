@@ -44,8 +44,65 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final nameController = TextEditingController();
 
-  getData () async {
+  nextPoll() async {
+    if (sendingCommand != 0) {
+      LocalServices().sendPostCommandRequest(sendingCommand, 0, 0, 0, 0, 0);
+      print("Sent $sendingCommand command");
+      sendingCommand = 0;
+      return;
+    }
     poll.value = LocalServices().getPoll();
+    assignPoll();
+    if (pollValue != null) {
+      int mode = pollValue!.mode;
+      pumpValues.value = [pumpValues.value[0], mode];
+    }
+  }
+
+  late DateTime time9;
+  late DateTime time13;
+  late DateTime time17;
+
+  void initCSVTimers() {
+    int day = DateTime.now().day;
+    
+    if (DateTime.now().hour >= 9) {
+      day = DateTime.now().day + 1;
+    } else {
+      day = DateTime.now().day;
+    }
+    time9 = DateTime(
+      DateTime.now().year, 
+      DateTime.now().month,
+      day,
+      9,
+    );
+    if (DateTime.now().hour >= 13) {
+      day = DateTime.now().day + 1;
+    } else {
+      day = DateTime.now().day;
+    }
+    time13 = DateTime(
+      DateTime.now().year, 
+      DateTime.now().month,
+      DateTime.now().day,
+      13,
+    );
+    if (DateTime.now().hour >= 17) {
+      day = DateTime.now().day + 1;
+    } else {
+      day = DateTime.now().day;
+    }
+    time17 = DateTime(
+      DateTime.now().year, 
+      DateTime.now().month,
+      DateTime.now().day,
+      17,
+    );
+    
+    Timer(time9.difference(DateTime.now()), () => timerCSVAction(poll));
+    Timer(time13.difference(DateTime.now()), () => timerCSVAction(poll));
+    Timer(time17.difference(DateTime.now()), () => timerCSVAction(poll));
   }
   
   late FocusNode focusNode;
@@ -53,32 +110,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     initWriteCSV();
     focusNode = FocusNode();
-    // pollEnd.value = !pollEnd.value;
-    // getData();
-    time9 = DateTime(
-      appInitTime.year, 
-      appInitTime.month,
-      appInitTime.day,
-      9,
-    );
-    time13 = DateTime(
-      appInitTime.year, 
-      appInitTime.month,
-      appInitTime.day,
-      13,
-    );
-    time17 = DateTime(
-      appInitTime.year, 
-      appInitTime.month,
-      appInitTime.day,
-      17,
-    );
+    
+    nextPoll();
+
     // record 9-9.30 , 1-1.30 , 5-5.30
     
-    Timer(time9.difference(DateTime.now()), () => timerCSVAction(poll));
-    Timer(time13.difference(DateTime.now()), () => timerCSVAction(poll));
-    Timer(time17.difference(DateTime.now()), () => timerCSVAction(poll));
-    pollTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) => getData());
+    initCSVTimers();
+    Timer.periodic(const Duration(days: 1), (Timer t) => initCSVTimers());
+    
+    pollTimer = Timer.periodic(const Duration(milliseconds: 2000), (Timer t) => nextPoll());
   }
 
   @override

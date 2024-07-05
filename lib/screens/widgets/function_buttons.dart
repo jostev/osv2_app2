@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:osv2_app2/screens/screensaver.dart';
-import 'package:osv2_app2/services/local_services.dart';
 import 'package:osv2_app2/services/theme_provider.dart';
 import 'package:osv2_app2/utils/timers.dart';
 
 const int PUMP_MODE_OFF = 100;
 const int PUMP_MODE_SUPER = 102;
+
+int sendingCommand = 0;
 
 Widget buildIconButtons(
   BuildContext context, 
@@ -109,7 +110,7 @@ Widget buildIconButtons(
       width: SCREEN_WIDTH * 0.28 * 0.8 / 3,  
       child: Column(children: [
         ValueListenableBuilder(
-          valueListenable: pumpDuration,
+          valueListenable: pumpValues,
           builder: (context, value, child) {
             return FloatingActionButton.large(
               heroTag: "pmp_btn",
@@ -117,24 +118,10 @@ Widget buildIconButtons(
                 if (pumpTimerStart) {
                   pumpTimer.cancel();
                   pumpTimerStart = !pumpTimerStart;
-                  try {
-                    print("sent pump off");
-                    LocalServices().sendPostCommandRequest(
-                      PUMP_MODE_OFF, 0, 0, 0, 0, 0
-                    );
-                  } on Exception catch (e) {
-                    print(e);
-                  }
+                  sendingCommand = PUMP_MODE_OFF; 
                 } else {
                   pumpTimerStart = !pumpTimerStart;
-                  try {
-                    print("sent pump on");
-                    LocalServices().sendPostCommandRequest(
-                      PUMP_MODE_SUPER, 0, 0, 0, 0, 0
-                    );
-                  } on Exception catch (e) {
-                    print(e);
-                  }
+                  sendingCommand = PUMP_MODE_SUPER;
                   startPumpTimer();
                 }
               },
@@ -150,11 +137,21 @@ Widget buildIconButtons(
               focusElevation: 0,
               hoverElevation: 0,
               child: () {
-                var color = Theme.of(context).primaryColor;
-                if (!isConnected) color = Colors.red;
+                Color color = Theme.of(context).primaryColor;
+
+                if (pumpValues.value[1] == 2) {
+                  color = Colors.green;
+                } else if (pumpValues.value[1] == 1) {
+                  color = Colors.purple;
+                } else if (pumpValues.value[1] == 0) {
+                  color = Theme.of(context).primaryColor;
+                } else {
+                  color = Colors.red;
+                }
+
                 if (pumpTimerStart) {
                   return Text(
-                    timeToString(pumpDuration.value), 
+                    timeToString(pumpValues.value[0]), 
                     style: TextStyle(
                       fontSize: 25, 
                       color: color, 

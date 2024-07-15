@@ -66,6 +66,10 @@ String roundToDecimalPlace(double x, int n) {
   return number;
 }
 
+int roundToNum(num x, int n) {
+  return (x/n).round() * n;
+}
+
 double abs(double x) {
   return x < 0 ? -x : x;
 }

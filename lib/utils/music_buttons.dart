@@ -4,10 +4,12 @@ import 'package:just_audio/just_audio.dart';
 List<String> music = [
   "assets/music/CC_1HR.mp3",
   "assets/music/CC_10&10.mp3",
+  // "assets/music/fun.mp3"
 ];
 List<String> musicNames = [
   "1 Hour",
   "10 & 10",
+  // "fun"
 ];
 ValueNotifier<int> selectedSong = ValueNotifier<int>(0);
 bool isPlaying = false;

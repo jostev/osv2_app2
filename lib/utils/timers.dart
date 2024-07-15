@@ -12,7 +12,7 @@ import 'package:osv2_app2/utils/music_buttons.dart';
 // SESSION TIMER LOGIC //
 //
 final ValueNotifier<int> sessionDuration = ValueNotifier<int>(3600);
-final Timer sessionTimer = Timer(const Duration(seconds: 3600), () {});
+Timer sessionTimer = Timer(const Duration(seconds: 3600), () {});
 bool timerStart = false;
 
 void timerCSVAction(poll) async {
@@ -29,8 +29,9 @@ void timerCSVAction(poll) async {
 void startTimer() {
   // session timer
   const timeInc = Duration(seconds: 1);
+  sessionDuration.value--;
   // ignore: unused_local_variable
-  Timer sessionTimer = Timer.periodic(
+  sessionTimer = Timer.periodic(
     timeInc,
     (Timer timer) async {
       if (sessionDuration.value == 0) {
@@ -48,14 +49,24 @@ void startTimer() {
   );
 }
 
+void stopTimer() {
+  sessionTimer.cancel();
+  timerStart = false;
+  sessionDuration.value = 3600;
+}
+
 //
 // PUMP TIMER LOGIC //
 //
+
+// pumpValues = [duration, mode]
 final ValueNotifier<List<int>> pumpValues = ValueNotifier([ 600, 0 ]);
 final Timer pumpTimer = Timer(const Duration(seconds: 600), () {});
 bool pumpTimerStart = false;
 
 void startPumpTimer() async {
+  pumpTimerStart = true;
+  
   sendingCommand = PUMP_MODE_SUPER;
   // session timer
   const timeInc = Duration(seconds: 1);
@@ -68,6 +79,7 @@ void startPumpTimer() async {
         pumpTimerStart = false;
         // sendingCommand = 100; // sending twice
 
+        // write values to csv file when pump timer ends
         assignPoll();
         if (pollValue != null) writeCSV(pollValue as Poll);
         printCSV();
@@ -89,6 +101,12 @@ void startPumpTimer() async {
       }
     },
   );
+}
+
+void stopPumpTimer() {
+  pumpTimer.cancel();
+  pumpTimerStart = false;
+  pumpValues.value = [600, pumpValues.value[1]];
 }
 
 String timeToString(int seconds) {

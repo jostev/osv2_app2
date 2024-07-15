@@ -51,8 +51,8 @@ Widget buildChemicalReadings(
             // moving average
             List<BarData> bars = [
               BarData(title: "PH", value: avgList(ph), max: 14, style: chart1),
-              BarData(title: "ORP", value: avgList(orp).toInt(), max: 1000, style: chart1),
-              BarData(title: "CH", value: avgList(ch), max: 1000, style: chart1),
+              BarData(title: "ORP", value: avgList(orp).toInt(), max: 1800, style: chart1),
+              BarData(title: "CH", value: avgList(ch), max: 40, style: chart1),
             ];
 
             if (snapshot.hasData) {

@@ -31,7 +31,7 @@ Widget buildIconButtons(
       width: SCREEN_WIDTH * 0.28 * 0.8 / 3,  
       child: Column(children: [
         FloatingActionButton.large(
-          heroTag: "ss_btn",
+          heroTag: "sl_btn",
           onPressed: () {
             SystemChrome.setEnabledSystemUIMode(
               SystemUiMode.immersive,
@@ -116,13 +116,11 @@ Widget buildIconButtons(
               heroTag: "pmp_btn",
               onPressed: () {
                 if (pumpTimerStart) {
-                  pumpTimer.cancel();
-                  pumpTimerStart = !pumpTimerStart;
+                  stopPumpTimer();
                   sendingCommand = PUMP_MODE_OFF; 
                 } else {
-                  pumpTimerStart = !pumpTimerStart;
-                  sendingCommand = PUMP_MODE_SUPER;
                   startPumpTimer();
+                  sendingCommand = PUMP_MODE_SUPER;
                 }
               },
               foregroundColor: Theme.of(context).primaryColor,
@@ -139,14 +137,14 @@ Widget buildIconButtons(
               child: () {
                 Color color = Theme.of(context).primaryColor;
 
-                if (pumpValues.value[1] == 2) {
+                if (pumpValues.value[1] == 2 ) {
                   color = Colors.green;
                 } else if (pumpValues.value[1] == 1) {
                   color = Colors.purple;
                 } else if (pumpValues.value[1] == 0) {
                   color = Theme.of(context).primaryColor;
                 } else {
-                  color = Colors.red;
+                  color = Colors.amber;
                 }
 
                 if (pumpTimerStart) {

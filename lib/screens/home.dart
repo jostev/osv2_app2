@@ -115,9 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // record 9-9.30 , 1-1.30 , 5-5.30
     
-    initCSVTimers();
-    Timer.periodic(const Duration(days: 1), (Timer t) => initCSVTimers());
+    // initCSVTimers();
+    // Timer.periodic(const Duration(days: 1), (Timer t) => initCSVTimers());
     
+    // osv2 can only handle 2 second polls
     pollTimer = Timer.periodic(const Duration(milliseconds: 2000), (Timer t) => nextPoll());
   }
 
@@ -179,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: SCREEN_HEIGHT * 0.03, 
                     color: Colors.transparent,
                   ),
-                  buildSessionTimer(context, SCREEN_HEIGHT, SCREEN_WIDTH, player),
+                  buildSessionTimer2(context, SCREEN_HEIGHT, SCREEN_WIDTH, player),
                   Divider(
                     height: SCREEN_HEIGHT * 0.017, 
                     color: Colors.transparent

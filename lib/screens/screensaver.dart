@@ -252,7 +252,7 @@ with SingleTickerProviderStateMixin {
                           );
                         } else {
                           return Text(
-                            'Thank you for your time', 
+                            'Thank you, please leave a review', 
                             style: TextStyle(
                               color: Colors.white, 
                               fontSize: SCREEN_WIDTH * 0.03, 
@@ -269,7 +269,7 @@ with SingleTickerProviderStateMixin {
                   widget.usersName.replaceAll('\n', ' '), 
                   style: TextStyle(
                     color: Colors.white, 
-                    fontSize: SCREEN_WIDTH * 0.08,
+                    fontSize: SCREEN_WIDTH * 0.08 - 16,
                     fontFamily: 'RobotoMono',
                     // fontWeight: FontWeight.w300,
                   ),

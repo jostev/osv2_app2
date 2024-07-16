@@ -21,9 +21,9 @@ Custom developed application for the company City Cave to interact with Maytroni
 6. You may need to add ```<uses-permission android:name="android.permission.INTERNET"/>``` to ```android/app/src/debug/AndroidManifest.xml``` or ```android/app/src/main/AndroidManifest.xml```.
 
 ## Screenshots
-![image](https://github.com/jostev/osv2_app2/assets/158697367/5fc04ec0-a01e-4bd2-8e82-c98fc295862a)
-![image](https://github.com/jostev/osv2_app2/assets/158697367/1a445d18-3ea5-4454-be53-bf92f1dd1859)
-![image](https://github.com/jostev/osv2_app2/assets/158697367/2dacfd13-347d-46d2-bef7-ff4aabe3f460)
+![image](https://github.com/user-attachments/assets/deabac0e-9dd7-4465-9497-96e1969508cc)
+![image](https://github.com/user-attachments/assets/375d31bd-cd8c-49e5-ba67-e286fa4cc422)
+![image](https://github.com/user-attachments/assets/f2dd5921-5af5-4ae5-85a0-f25fc37b0834)
 
 
 ## Contributing 

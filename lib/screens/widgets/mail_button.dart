@@ -2,15 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:osv2_app2/services/mailer.dart';
 
-Widget buildMailButton(BuildContext context, double SCREEN_HEIGHT, double SCREEN_WIDTH) {
+Widget buildMailButton(BuildContext context, double screenHeight, double screenWidth) {
   TextStyle btn1 = TextStyle(
-    fontSize: SCREEN_WIDTH * 0.02, 
+    fontSize: screenWidth * 0.02, 
     color: Theme.of(context).colorScheme.primary
   );
 
   return Container(
-    height: SCREEN_HEIGHT * 0.14,
-    width: SCREEN_WIDTH * 0.28,
+    height: screenHeight * 0.14,
+    width: screenWidth * 0.28,
     alignment: Alignment.topCenter,
     child: Column(
       children: [
@@ -18,8 +18,8 @@ Widget buildMailButton(BuildContext context, double SCREEN_HEIGHT, double SCREEN
         
         // const Divider(height: 9, color: Colors.transparent,),
         SizedBox(
-          height: SCREEN_HEIGHT * 0.1,
-          width: SCREEN_WIDTH * 0.175,
+          height: screenHeight * 0.1,
+          width: screenWidth * 0.175,
           child: TextButton(
             onPressed: () async {
               sendMail();

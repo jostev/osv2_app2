@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:osv2_app2/model/poll.dart';
 import 'package:osv2_app2/utils/bar_chart.dart';
@@ -13,17 +14,16 @@ void assignPoll() async {
 
 Widget buildChemicalReadings(
   BuildContext context, 
-  double SCREEN_HEIGHT, 
-  double SCREEN_WIDTH, 
+  double screenHeight, 
+  double screenWidth, 
   ValueNotifier<Future<Poll?>> poll, 
   List<double> ph, 
   List<int> orp, 
   List<double> ch, 
-  List<double> temp
   ) {
   return Container(
-    height: SCREEN_HEIGHT * 0.85 * 0.65,
-    width: SCREEN_WIDTH * 0.44,
+    height: screenHeight * 0.85 * 0.65,
+    width: screenWidth * 0.44,
     alignment: Alignment.center,
     padding: const EdgeInsets.only(
       left: 30, 
@@ -62,23 +62,20 @@ Widget buildChemicalReadings(
               }
 
               int mode = snapshot.data!.mode;
-              if (mode != 2) {
+              if (mode != 2 + 272) {
                 return Stack(
                   children: [
                     improvedBarChart(
                       context,
                       bars, 
                       visualData,
-                      SCREEN_HEIGHT * 0.85 * 0.65, 
-                      SCREEN_WIDTH * 0.44 / 3 - 20
+                      screenHeight * 0.85 * 0.65, 
+                      clampDouble(screenWidth * 0.44 / 3 - 20, 0, double.infinity)
                     ),
                     const Text("displaying old values.")
                   ],
                 );
               }
-
-              if (snapshot.data!.temp != 0) temp.add(snapshot.data!.temp);
-              if (temp.length > 10) temp.remove(temp[0]);
 
               // add values to lists
               ph.add(snapshot.data!.ph);
@@ -92,7 +89,7 @@ Widget buildChemicalReadings(
             }
 
             
-
+            
             if (snapshot.hasError) {
               return Text("Error: ${snapshot.error}");
             }
@@ -101,8 +98,8 @@ Widget buildChemicalReadings(
               context,
               bars, 
               visualData,
-              SCREEN_HEIGHT * 0.85 * 0.65, 
-              SCREEN_WIDTH * 0.44 / 3 - 20
+              screenHeight * 0.85 * 0.65, 
+              clampDouble(screenWidth * 0.44 / 3 - 20, 0, double.infinity)
             );
           }
         );

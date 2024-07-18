@@ -2,37 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:osv2_app2/model/poll.dart';
 import 'package:osv2_app2/utils/math.dart';
 
-Widget buildWaterTempMeter(context, SCREEN_HEIGHT, SCREEN_WIDTH, poll, temp) {
+Widget buildWaterTempMeter(context, screenHeight, screenWidth, poll, temp) {
   TextStyle guage1 = TextStyle(
-    fontSize: SCREEN_WIDTH * 0.04, 
+    fontSize: screenWidth * 0.04, 
     color: Theme.of(context).primaryColor, 
     fontWeight: FontWeight.w700
   );
 
   TextStyle label1 = TextStyle(
-    fontSize: SCREEN_WIDTH * 0.02, 
+    fontSize: screenWidth * 0.02, 
     color: Theme.of(context).hintColor, 
     fontWeight: FontWeight.w700
   );
 
   return SizedBox(
-    height: SCREEN_HEIGHT * 0.5,
-    width: SCREEN_WIDTH * 0.28,
+    height: screenHeight * 0.5,
+    width: screenWidth * 0.28,
     child: Column(children: [
       SizedBox(
-        height: SCREEN_HEIGHT * 0.5, 
-        width: SCREEN_WIDTH * 0.28 * 0.8,
+        height: screenHeight * 0.5, 
+        width: screenWidth * 0.28 * 0.8,
         child: Column(children: [
           Container(
-            height: SCREEN_WIDTH * 0.21, 
-            width: SCREEN_WIDTH * 0.21,
+            height: screenWidth * 0.21, 
+            width: screenWidth * 0.21,
             decoration: BoxDecoration(
               border: Border.all(
                 color: Theme.of(context).primaryColor, 
                 width: 8
               ), 
               borderRadius: BorderRadius.all(
-                Radius.circular(SCREEN_WIDTH * 0.21 / 2)
+                Radius.circular(screenWidth * 0.21 / 2)
               )
             ),
             alignment: Alignment.center,
@@ -59,7 +59,7 @@ Widget buildWaterTempMeter(context, SCREEN_HEIGHT, SCREEN_WIDTH, poll, temp) {
               }), // FIX
           ),
           Divider(
-            height: SCREEN_HEIGHT * 0.017, 
+            height: screenHeight * 0.017, 
             color: Colors.transparent
           ),
           Text("Water Temp", style: label1,)

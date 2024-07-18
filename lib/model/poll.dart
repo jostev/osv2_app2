@@ -30,8 +30,8 @@ class Poll {
     factory Poll.fromJson(Map<String, dynamic> json) => Poll(
         ph: int.parse(json["PH"])/100,
         ch: double.parse(json["CH"]),
-        orp: int.parse(json["ORP"]),
-        temp: double.parse(json["CH"]),
+        orp: int.parse(json["ORP"]), // - 32768
+        temp: double.parse(json["TEMP"]),
         error: json["error"],
         mode: int.parse(json["MODE"]),
     );

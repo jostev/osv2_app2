@@ -11,24 +11,26 @@ int sendingCommand = 0;
 
 Widget buildIconButtons(
   BuildContext context, 
-  double SCREEN_HEIGHT, 
-  double SCREEN_WIDTH, 
+  double screenHeight, 
+  double screenWidth, 
   TextEditingController nameController, 
   FocusNode focusNode, 
   ThemeProvider themeProvider) {
   TextStyle btn2 = TextStyle(
-    fontSize: SCREEN_WIDTH * 0.015, 
+    fontSize: screenWidth * 0.015, 
     color: Theme.of(context).hintColor
   );
   
+  
+
   return Row(children: [
     VerticalDivider(
-      width: SCREEN_WIDTH * 0.28 * 0.2 / 4, 
+      width: screenWidth * 0.28 * 0.2 / 4, 
       color: Colors.transparent,
     ),
     SizedBox(
-      height: SCREEN_HEIGHT * 0.24,
-      width: SCREEN_WIDTH * 0.28 * 0.8 / 3,  
+      height: screenHeight * 0.24,
+      width: screenWidth * 0.28 * 0.8 / 3,  
       child: Column(children: [
         FloatingActionButton.large(
           heroTag: "sl_btn",
@@ -42,7 +44,13 @@ Widget buildIconButtons(
               ScreenSaver(
                 sentDuration: sessionDuration.value, 
                 timerStarted: timerStart, 
-                usersName: nameController.text,
+                usersName: () {
+                  if (nameController.text.endsWith(' ')) {
+                    return nameController.text.substring(0, nameController.text.length - 1);
+                  } else {
+                    return nameController.text;
+                  }
+                }(),
                 focusNode: focusNode,
               ))
             );
@@ -64,12 +72,12 @@ Widget buildIconButtons(
       ],)
     ),
     VerticalDivider(
-      width: SCREEN_WIDTH * 0.28 * 0.2 / 4, 
+      width: screenWidth * 0.28 * 0.2 / 4, 
       color: Colors.transparent,
     ),
     SizedBox(
-      height: SCREEN_HEIGHT * 0.24,
-      width: SCREEN_WIDTH * 0.28 * 0.8 / 3,  
+      height: screenHeight * 0.24,
+      width: screenWidth * 0.28 * 0.8 / 3,  
       child: Column(children: [
         FloatingActionButton.large(
           heroTag: "mde_btn",
@@ -102,12 +110,12 @@ Widget buildIconButtons(
       ],)
     ),
     VerticalDivider(
-      width: SCREEN_WIDTH * 0.28 * 0.2 / 4, 
+      width: screenWidth * 0.28 * 0.2 / 4, 
       color: Colors.transparent,
     ),
     SizedBox(
-      height: SCREEN_HEIGHT * 0.24,
-      width: SCREEN_WIDTH * 0.28 * 0.8 / 3,  
+      height: screenHeight * 0.24,
+      width: screenWidth * 0.28 * 0.8 / 3,  
       child: Column(children: [
         ValueListenableBuilder(
           valueListenable: pumpValues,
@@ -136,15 +144,15 @@ Widget buildIconButtons(
               hoverElevation: 0,
               child: () {
                 Color color = Theme.of(context).primaryColor;
-
-                if (pumpValues.value[1] == 2 ) {
+                
+                if (pumpValues.value[1] == 2 + 272) {
                   color = Colors.green;
-                } else if (pumpValues.value[1] == 1) {
+                } else if (pumpValues.value[1] == 1 + 272) {
                   color = Colors.purple;
-                } else if (pumpValues.value[1] == 0) {
+                } else if (pumpValues.value[1] == 272) {
                   color = Theme.of(context).primaryColor;
                 } else {
-                  color = Colors.amber;
+                  return const Icon(Icons.wifi, color: Colors.amber);
                 }
 
                 if (pumpTimerStart) {
@@ -175,7 +183,7 @@ Widget buildIconButtons(
       ],)
     ),
     VerticalDivider(
-      width: SCREEN_WIDTH * 0.28 * 0.2 / 4, 
+      width: screenWidth * 0.28 * 0.2 / 4, 
       color: Colors.transparent,
     ),
   ],);

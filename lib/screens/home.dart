@@ -15,7 +15,6 @@ import 'package:osv2_app2/screens/widgets/water_temp.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:osv2_app2/utils/icon_button.dart';
 import 'package:osv2_app2/utils/logo.dart';
 import 'package:osv2_app2/utils/music_buttons.dart';
 import 'package:osv2_app2/utils/timers.dart';
@@ -25,6 +24,7 @@ import 'package:osv2_app2/services/local_services.dart';
 import 'package:osv2_app2/services/mailer.dart';
 
 import 'package:osv2_app2/screens/john.dart';
+
 
 
 class HomeScreen extends StatefulWidget {
@@ -56,6 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
     if (pollValue != null) {
       int mode = pollValue!.mode;
       pumpValues.value = [pumpValues.value[0], mode];
+      temp.add(pollValue!.temp);
+      print(pollValue!.temp);
+      if (temp.length > 10) {
+        temp.removeAt(0);
+      }
     }
   }
 
@@ -111,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
     initWriteCSV();
     focusNode = FocusNode();
     
-    nextPoll();
+    // nextPoll();
 
     // record 9-9.30 , 1-1.30 , 5-5.30
     
@@ -119,7 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Timer.periodic(const Duration(days: 1), (Timer t) => initCSVTimers());
     
     // osv2 can only handle 2 second polls
-    pollTimer = Timer.periodic(const Duration(milliseconds: 2000), (Timer t) => nextPoll());
+    pollTimer = Timer.periodic(const Duration(seconds: 2), (Timer t) => nextPoll());
+    // pollTimer = Timer.periodic(const Duration(milliseconds: 2000), (Timer t) => nextPoll());
   }
 
   @override
@@ -136,8 +142,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;   
+
     TextStyle label1 = TextStyle(
-      fontSize: SCREEN_WIDTH * 0.02, 
+      fontSize: screenWidth * 0.02, 
       color: Theme.of(context).hintColor, 
       fontWeight: FontWeight.w700
     );
@@ -167,40 +176,40 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ),
             
-            height: SCREEN_HEIGHT,
-            width: SCREEN_WIDTH * 0.28,
+            height: screenHeight,
+            width: screenWidth * 0.28,
             child: Column(children: [
               Container(
                 color: Colors.transparent,
-                height: SCREEN_HEIGHT * 0.50,
-                width: SCREEN_WIDTH * 0.28,
+                height: screenHeight * 0.50,
+                width: screenWidth * 0.28,
                 child: 
                 Column(children: [
                   Divider(
-                    height: SCREEN_HEIGHT * 0.03, 
+                    height: screenHeight * 0.03, 
                     color: Colors.transparent,
                   ),
-                  buildSessionTimer2(context, SCREEN_HEIGHT, SCREEN_WIDTH, player),
+                  buildSessionTimer2(context, screenHeight, screenWidth),
                   Divider(
-                    height: SCREEN_HEIGHT * 0.017, 
+                    height: screenHeight * 0.017, 
                     color: Colors.transparent
                   ),
                   Text("Session Time", style: label1,)
                 ],)
               ),
-              buildMusicList(context, SCREEN_HEIGHT, SCREEN_WIDTH),
+              buildMusicList(context, screenHeight, screenWidth),
             ],),
           ),
           
           Row(children: [
             Column(children: [
-              buildCityCaveLogo(context, SCREEN_HEIGHT, SCREEN_WIDTH),
+              buildCityCaveLogo(context, screenHeight, screenWidth),
               Divider(
-                height: SCREEN_HEIGHT * 0.85 * 0.5 * 0.05, 
+                height: screenHeight * 0.85 * 0.5 * 0.05, 
                 color: Colors.transparent,
               ),
-              buildNameTextField(context, SCREEN_HEIGHT, SCREEN_WIDTH, nameController, focusNode),
-              buildChemicalReadings(context, SCREEN_HEIGHT, SCREEN_WIDTH, poll, ph, orp, ch, temp)
+              buildNameTextField(context, screenHeight, screenWidth, nameController, focusNode),
+              buildChemicalReadings(context, screenHeight, screenWidth, poll, ph, orp, ch)
             ]),
             
             Container(
@@ -224,16 +233,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Stack(
                 children: [Column(children: [
                   Divider(
-                    height: SCREEN_HEIGHT * 0.03, 
+                    height: screenHeight * 0.03, 
                     color: Colors.transparent,
                   ),
-                  buildWaterTempMeter(context, SCREEN_HEIGHT, SCREEN_WIDTH, poll, temp),
-                  buildIconButtons(context, SCREEN_HEIGHT, SCREEN_WIDTH, nameController, focusNode, themeProvider),
+                  buildWaterTempMeter(context, screenHeight, screenWidth, poll, temp),
+                  buildIconButtons(context, screenHeight, screenWidth, nameController, focusNode, themeProvider),
                   // Divider(
                   //   height: SCREEN_HEIGHT * 0.07, 
                   //   color: Colors.transparent,
                   // ),
-                  buildMailButton(context, SCREEN_HEIGHT, SCREEN_WIDTH)
+                  buildMailButton(context, screenHeight, screenWidth)
                 ],),
                 Positioned(
                   bottom: 1,

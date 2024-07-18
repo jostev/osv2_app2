@@ -75,6 +75,7 @@ Widget improvedBar(
 
   double thickness = visualData.thickness;
   double adjustedMaxHeight = height - 3 * (valueStyle.fontSize!) - (titleStyle.fontSize!);
+  if (adjustedMaxHeight < 0) adjustedMaxHeight = 0;
   double adjustedHeight = adjustedMaxHeight * percent;
 
   // if (adjustedHeight == 0) return Container(); // don't draw if value is 0?

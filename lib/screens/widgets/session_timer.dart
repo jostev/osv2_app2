@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:osv2_app2/utils/math.dart';
+import 'package:osv2_app2/utils/music_buttons.dart';
 import 'package:osv2_app2/utils/timers.dart';
 
 var startPos = [0.0, 0.0];
@@ -69,18 +70,17 @@ AudioPlayer player) {
 }
 
 Widget buildSessionTimer2(BuildContext context, 
-double SCREEN_HEIGHT, 
-double SCREEN_WIDTH, 
-AudioPlayer player) {
+double screenHeight, 
+double screenWidth) {
   TextStyle guage1 = TextStyle(
-    fontSize: SCREEN_WIDTH * 0.04, 
+    fontSize: screenWidth * 0.04, 
     color: Theme.of(context).primaryColor, 
     fontWeight: FontWeight.w700
   );
   
   var strokeWidth = 8.0;
   
-  var centerPosition = [SCREEN_WIDTH * 0.21 * 0.7, SCREEN_WIDTH * 0.21 * 0.7];
+  var centerPosition = [screenWidth * 0.21 * 0.69, screenWidth * 0.21 * 0.59];
 
 
   return GestureDetector(
@@ -125,20 +125,23 @@ AudioPlayer player) {
           stopTimer();
           player.stop();
           player.seek(const Duration(seconds: 0));
+          print("stop");
         } else {
           startTimer();
           player.seek(Duration(seconds: 3600 - sessionDuration.value));
           player.play();
+          print("play");
           timerStart = true;
         }
       } else {
         sessionTimer.cancel();
         player.stop();
         player.seek(const Duration(seconds: 0));
-
+        print("cancel");
         startTimer();
         player.seek(Duration(seconds: 3600 - sessionDuration.value));
         player.play();
+        print("play");
         timerStart = true;
       }
     },
@@ -150,8 +153,8 @@ AudioPlayer player) {
           builder: (context, value, child) {
             return Container(
               color: Colors.transparent,
-              height: SCREEN_WIDTH * 0.21,
-              width: SCREEN_WIDTH * 0.21,
+              height: screenWidth * 0.21,
+              width: screenWidth * 0.21,
               child: Transform.flip(
                 flipX: true,
                 child: CircularProgressIndicator(
@@ -173,18 +176,7 @@ AudioPlayer player) {
             );
           },
         ),
-        // Positioned(
-        //   top: centerPosition[1],
-        //   left: centerPosition[0],
-
-        //   child: Container(
-        //     height: 5,
-        //     width: 5,
-        //     color: Colors.amber,
-        //   ),
-        // )
       ],
     ),
   );
-     
 }

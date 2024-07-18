@@ -5,11 +5,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-import 'package:osv2_app2/utils/icon_button.dart';
 
 FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
 Size size = view.physicalSize / view.devicePixelRatio;
+
 
 class WaveAnimation extends StatefulWidget {
   const WaveAnimation({super.key});
@@ -173,6 +172,7 @@ with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     if (widget.timerStarted) startTimer();
+    widget.usersName.replaceAll('\n', ' ');
   }
 
   @override
@@ -238,14 +238,14 @@ with SingleTickerProviderStateMixin {
                         )
                         )
                       ],),
-                      Divider(height: SCREEN_WIDTH * 0.1, color: Colors.transparent,),
+                      Divider(height: size.width * 0.1, color: Colors.transparent,),
                       () {
                         if (widget.sentDuration - value != 3600 || value == 0) {
                           return Text(
                             'Welcome', 
                             style: TextStyle(
                               color: Colors.white, 
-                              fontSize: SCREEN_WIDTH * 0.03, 
+                              fontSize: size.width * 0.03, 
                               fontFamily: 'RobotoMono',
                               // fontWeight: FontWeight.w300
                             )
@@ -255,7 +255,7 @@ with SingleTickerProviderStateMixin {
                             'Thank you, please leave a review', 
                             style: TextStyle(
                               color: Colors.white, 
-                              fontSize: SCREEN_WIDTH * 0.03, 
+                              fontSize: size.width * 0.03, 
                               fontFamily: 'RobotoMono',
                               // fontWeight: FontWeight.w300
                             )
@@ -269,7 +269,7 @@ with SingleTickerProviderStateMixin {
                   widget.usersName.replaceAll('\n', ' '), 
                   style: TextStyle(
                     color: Colors.white, 
-                    fontSize: SCREEN_WIDTH * 0.08 - 16,
+                    fontSize: size.width * 0.08 - 16,
                     fontFamily: 'RobotoMono',
                     // fontWeight: FontWeight.w300,
                   ),

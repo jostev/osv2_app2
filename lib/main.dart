@@ -20,10 +20,6 @@ import 'package:flutter/foundation.dart';
 //
 // TODO LIST
 //
-// Find out how to reduce number of lines in home.dart
-// ValueNotifiers or providers?
-// way to check if pump on
-//
 // LATER
 //
 // Finish screen for connecting to osv2
@@ -31,6 +27,8 @@ import 'package:flutter/foundation.dart';
 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     if (kReleaseMode) exit(1);

@@ -61,20 +61,21 @@ void stopTimer() {
 
 // pumpValues = [duration, mode]
 final ValueNotifier<List<int>> pumpValues = ValueNotifier([ 600, 0 ]);
-final Timer pumpTimer = Timer(const Duration(seconds: 600), () {});
+Timer pumpTimer = Timer(const Duration(seconds: 600), () {});
 bool pumpTimerStart = false;
 
-void startPumpTimer() async {
+void startPumpTimer() {
   pumpTimerStart = true;
   
   sendingCommand = PUMP_MODE_SUPER;
   // session timer
   const timeInc = Duration(seconds: 1);
   // ignore: unused_local_variable
-  Timer pumpTimer = Timer.periodic(
+  pumpTimer = Timer.periodic(
     timeInc,
-    (Timer timer) {
+    (Timer timer) async {
       if (pumpValues.value[0] == 0) {
+        // resets timer
         pumpValues.value = [600, pumpValues.value[1]];
         pumpTimerStart = false;
         // sendingCommand = 100; // sending twice
@@ -86,6 +87,7 @@ void startPumpTimer() async {
 
         timer.cancel();
       } else {
+        // decrements timer
         pumpValues.value = [pumpValues.value[0] - 1, pumpValues.value[1]];
       }
       if (!pumpTimerStart) {
@@ -93,6 +95,7 @@ void startPumpTimer() async {
         pumpTimerStart = false;
         sendingCommand = 100;
 
+        // write values to csv file when pump timer ends
         assignPoll();
         if (pollValue != null) writeCSV(pollValue as Poll);
         printCSV();

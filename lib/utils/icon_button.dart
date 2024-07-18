@@ -4,13 +4,11 @@ import 'custom_colors.dart';
 
 FlutterView view = WidgetsBinding.instance.platformDispatcher.views.first;
 Size size = view.physicalSize / view.devicePixelRatio;
-final double SCREEN_WIDTH = size.width;
-final double SCREEN_HEIGHT = size.height;
 
-Widget customIconButton(Icon icon, String text, TextStyle style) {
+Widget customIconButton(Icon icon, String text, TextStyle style, double screenWidth, double screenHeight) {
   return SizedBox(
-    height: SCREEN_HEIGHT * 0.85 * 0.4,
-    width: SCREEN_WIDTH * 0.77 * 0.55* 0.23,
+    height: screenHeight * 0.85 * 0.4,
+    width: screenWidth * 0.77 * 0.55* 0.23,
     child: Column(children: [
       FloatingActionButton.large(
         onPressed: (){},

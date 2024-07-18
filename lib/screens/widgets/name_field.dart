@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 Widget buildNameTextField(
   BuildContext context, 
-  double SCREEN_HEIGHT, 
-  double SCREEN_WIDTH, 
+  double screenHeight, 
+  double screenWidth, 
   TextEditingController nameController, 
   FocusNode focusNode
   ) {
   return Container(
-    height: SCREEN_HEIGHT * 0.85 * 0.3,
-    width: SCREEN_WIDTH * 0.44,
+    height: screenHeight * 0.85 * 0.3,
+    width: screenWidth * 0.44,
     padding: const EdgeInsets.only( 
       left: 30, 
       right: 30, 

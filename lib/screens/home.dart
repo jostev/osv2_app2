@@ -25,7 +25,7 @@ import 'package:osv2_app2/services/mailer.dart';
 
 import 'package:osv2_app2/screens/john.dart';
 
-
+bool doNextPoll = true;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});  
@@ -55,16 +55,16 @@ class _HomeScreenState extends State<HomeScreen> {
     assignPoll();
     if (pollValue != null) {
       int mode = pollValue!.mode;
+      // print(mode);
       pumpValues.value = [pumpValues.value[0], mode];
       temp.add(pollValue!.temp);
-      print(pollValue!.temp);
-      if (temp.length > 10) {
+      if (temp.length > 5) {
         temp.removeAt(0);
       }
     }
   }
 
-  late DateTime time9;
+  late DateTime time8;
   late DateTime time13;
   late DateTime time17;
 
@@ -76,11 +76,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       day = DateTime.now().day;
     }
-    time9 = DateTime(
+    time8 = DateTime(
       DateTime.now().year, 
       DateTime.now().month,
       day,
-      9,
+      8,
     );
     if (DateTime.now().hour >= 13) {
       day = DateTime.now().day + 1;
@@ -105,9 +105,18 @@ class _HomeScreenState extends State<HomeScreen> {
       17,
     );
     
-    Timer(time9.difference(DateTime.now()), () => timerCSVAction(poll));
-    Timer(time13.difference(DateTime.now()), () => timerCSVAction(poll));
-    Timer(time17.difference(DateTime.now()), () => timerCSVAction(poll));
+    Timer(time8.difference(DateTime.now()), () {
+      canSave = true;
+      canSaveTimer();
+    });
+    Timer(time13.difference(DateTime.now()), () {
+      canSave = true;
+      canSaveTimer();
+    });
+    Timer(time17.difference(DateTime.now()), () {
+      canSave = true;
+      canSaveTimer();
+    });
   }
   
   late FocusNode focusNode;
@@ -115,21 +124,29 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     initWriteCSV();
     focusNode = FocusNode();
+
+    startAudioTimer();
     
     // nextPoll();
 
     // record 9-9.30 , 1-1.30 , 5-5.30
     
-    // initCSVTimers();
+    initCSVTimers();
     // Timer.periodic(const Duration(days: 1), (Timer t) => initCSVTimers());
     
+    LocalServices().getInfo();
     // osv2 can only handle 2 second polls
-    pollTimer = Timer.periodic(const Duration(seconds: 2), (Timer t) => nextPoll());
+    pollTimer = Timer.periodic(const Duration(seconds: 2), (Timer t) {
+      if (doNextPoll) {
+        nextPoll();
+      }
+    });
     // pollTimer = Timer.periodic(const Duration(milliseconds: 2000), (Timer t) => nextPoll());
   }
 
   @override
   void dispose() {
+    audioTimer.cancel();
     player.dispose();
     nameController.dispose();
     sessionTimer.cancel();

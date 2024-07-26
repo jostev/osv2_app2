@@ -8,22 +8,8 @@ double root(double x, double n) {
     return 1;
   }
   double r = x * n;
-  for (var i = 0; i < 10; i++) {
+  for (var i = 0; i < 20; i++) {
     r = (r + x/r)*n;
-  }
-  return r;
-}
-
-double powd(double x, double n) {
-  double r = root(x, n - n.floorToDouble());
-  if (n > 0) {
-    for (var i = 0; i < n.floor(); i++) {
-      r *= x;
-    }
-  } else {
-    for (var i = n.floor(); i < 0; i++) {
-      r /= x;
-    }
   }
   return r;
 }
@@ -60,6 +46,9 @@ double intNoise(double x) {
 
 String roundToDecimalPlace(double x, int n) {
   String number = ((x * pow(10, n)).roundToDouble()/pow(10, n)).toString();
+  if (!number.contains('.')) {
+    number += '.';
+  }
   while (number.split('.')[1].length < n) {
     number += '0';
   }

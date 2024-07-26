@@ -24,7 +24,6 @@ AudioPlayer player) {
   return ValueListenableBuilder(
     valueListenable: sessionDuration, 
     builder: (context, value, child) {
-      print(value);
       return Stack(
         alignment: Alignment.center,
         children: [ 
@@ -122,26 +121,28 @@ double screenWidth) {
       strokeWidth = 8.0;
       if (abs(startPos[0] - endPos[0]) < 10 && abs(startPos[1] - endPos[1]) < 10) {
         if (timerStart) {
-          stopTimer();
-          player.stop();
-          player.seek(const Duration(seconds: 0));
+          addPendingJAFunction(() {
+            stopTimer();
+            player.stop();
+            player.seek(const Duration(seconds: 0));
+          });
           print("stop");
         } else {
-          startTimer();
-          player.seek(Duration(seconds: 3600 - sessionDuration.value));
-          player.play();
+          addPendingJAFunction(() {
+            startTimer();
+            player.seek(Duration(seconds: 3600 - sessionDuration.value));
+            player.play();
+          });
           print("play");
           timerStart = true;
         }
       } else {
+        addPendingJAFunction((){
+          player.seek(Duration(seconds: 3600 - sessionDuration.value));
+          player.play();
+        });
         sessionTimer.cancel();
-        player.stop();
-        player.seek(const Duration(seconds: 0));
-        print("cancel");
         startTimer();
-        player.seek(Duration(seconds: 3600 - sessionDuration.value));
-        player.play();
-        print("play");
         timerStart = true;
       }
     },

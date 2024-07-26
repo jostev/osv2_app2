@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:osv2_app2/model/poll.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'dart:async';
+
+import 'package:flutter_mailer/flutter_mailer.dart';
+import 'package:osv2_app2/services/local_services.dart';
 
 Future<String> get _localPath async {
   final directory = await getApplicationCacheDirectory();
@@ -12,7 +15,11 @@ Future<String> get _localPath async {
 
 Future<File> get _localFile async {
   final path = await _localPath;
-  return File('$path/poll.csv');
+  final devInfo = await LocalServices().getInfo();
+  var addressList = devInfo.address.split(':');
+  var address = addressList[3] + addressList[4] + addressList[5];
+
+  return File('$path/Osv2$address.csv');
 }
 
 Future<File> writeCSV(Poll poll) async {
@@ -52,16 +59,19 @@ void printCSV() async {
 }
 
 void sendMail() async {
-  final path = await _localPath;
-  final Email email = Email(
-    body: "Attached ph, orp, and ch values from 9am, 1pm and 5pm.",
-    subject: "Chemical Readings from 9am, 1pm, and 5pm",
-    // recipients: ["example@example.com"],
-    // cc: ["cc@example.com"],
-    // bcc: ["bcc@example.com"],
-    attachmentPaths: ["$path/poll.csv"],
-    isHTML: false,
+  // final path = await _localPath;
+  final file = await _localFile;
+  final MailOptions mailOptions = MailOptions(
+    body: "Recorded ph, orp, and ch values.",
+    subject: "MineralSwim Pool Readings",
+    recipients: ['example@example.com'],
+    isHTML: true,
+    attachments: [file.path],
   );
-  await FlutterEmailSender.send(email);
-  print("Email sent.");
+  final MailerResponse response = await FlutterMailer.send(mailOptions);
+  // if (response == MailerResponse.android) { print("success"); }
 }
+
+
+
+

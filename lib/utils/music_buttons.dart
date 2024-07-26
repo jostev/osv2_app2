@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'timers.dart';
 
 List<String> music = [
   "assets/music/CC_1HR.mp3",
   "assets/music/CC_10&10.mp3",
-  "assets/music/fun.mp3"
+  // "assets/music/fun.mp3"
 ];
 List<String> musicNames = [
   "1 Hour",
   "10 & 10",
-  "fun"
+  // "fun"
 ];
 ValueNotifier<int> selectedSong = ValueNotifier<int>(0);
-bool isPlaying = false;
 final player = AudioPlayer();
+
+List<Function> pendingJAFunctions = [];
+void addPendingJAFunction(Function function) {
+  pendingJAFunctions.add(function);
+}
 
 List<Widget> buildMusicButtons(TextStyle style, double screenWidth, double screenHeight) {
   List<Widget> buttons = [];
@@ -29,7 +34,16 @@ List<Widget> buildMusicButtons(TextStyle style, double screenWidth, double scree
             return TextButton(
               onPressed: () {
                 selectedSong.value = i;
-                player.setAsset(music[i]);
+                addPendingJAFunction(() {
+                  player.stop();
+                  player.setAsset(music[i]);
+                  player.seek(Duration(seconds: 3600 - sessionDuration.value));
+                  player.play();
+                });
+                // player.stop();
+                // player.setAsset(music[i]);
+                // player.seek(Duration(seconds: 3600 - sessionDuration.value));
+                // player.play();
               },
               style: TextButton.styleFrom(
                 backgroundColor: () {
@@ -47,7 +61,7 @@ List<Widget> buildMusicButtons(TextStyle style, double screenWidth, double scree
         )
       )
     );
-    buttons.add(const Divider(height: 1, color: Colors.transparent));
+    buttons.add(const Divider(height: 3, color: Colors.transparent));
   }
   return buttons;
 }

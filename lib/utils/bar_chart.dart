@@ -83,7 +83,9 @@ Widget improvedBar(
   
   valueContainer([String? child]) {
     if (child == null) return SizedBox(width: 3 * (valueStyle.fontSize ?? 0), height: 1.1 * (valueStyle.fontSize ?? 0));
-    return Container(
+    return AnimatedContainer(
+      duration: visualData.animationDuration ?? Duration.zero,
+      curve: Curves.easeInOut,
       width: 3 * (valueStyle.fontSize ?? 0),
       height: 1.5 * (valueStyle.fontSize ?? 0),
       alignment: Alignment.center,

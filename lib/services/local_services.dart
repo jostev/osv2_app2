@@ -12,8 +12,10 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:osv2_app2/model/poll.dart';
+import 'package:osv2_app2/model/devinfo.dart';
 
 const String baseUrl = 'http://192.168.4.1';
+DevInfo lastDevInfo = DevInfo(name: '', address: '');
 
 class LocalServices
 {
@@ -33,6 +35,20 @@ class LocalServices
         return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Timeout: $e", mode: 0);
       }
       return Poll(ph: 1, ch: 1, orp: 1, temp: 1, error: "Caught error: $e", mode: 0);
+    });
+  }
+
+  Future<DevInfo> getInfo() {
+    var api = '/devinfo';
+    var url = Uri.parse(baseUrl + api);
+    return client.get(url).then((response) {
+      var json = response.body;
+      client.close();
+      var info = devInfoFromJson(json);
+      lastDevInfo = info;
+      return info;
+    }).catchError((e) {
+      return lastDevInfo;
     });
   }
 

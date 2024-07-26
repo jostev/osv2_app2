@@ -6,7 +6,30 @@ import 'package:osv2_app2/screens/widgets/chemical_readings.dart';
 import 'package:osv2_app2/screens/widgets/function_buttons.dart';
 import 'package:osv2_app2/services/mailer.dart';
 import 'package:osv2_app2/utils/music_buttons.dart';
+//
+// JUST AUDIO COMMANDS TIMER
+//
 
+Timer audioTimer = Timer(const Duration(seconds: 1), () {});
+
+void startAudioTimer() {
+  // session timer
+  const timeInc = Duration(milliseconds: 200);
+  // ignore: unused_local_variable
+  audioTimer = Timer.periodic(
+    timeInc,
+    (Timer timer) async {
+      if (pendingJAFunctions.isNotEmpty) {
+        pendingJAFunctions[0]();
+        pendingJAFunctions.removeAt(0);
+      }
+    },
+  );
+}
+
+void stopAudioTimer() {
+  audioTimer.cancel();
+}
 
 //
 // SESSION TIMER LOGIC //
@@ -14,6 +37,17 @@ import 'package:osv2_app2/utils/music_buttons.dart';
 final ValueNotifier<int> sessionDuration = ValueNotifier<int>(3600);
 Timer sessionTimer = Timer(const Duration(seconds: 3600), () {});
 bool timerStart = false;
+
+bool canSave = false;
+Timer saveTimer = Timer(const Duration(seconds: 1), () {});
+
+void canSaveTimer() {
+  const timeInc = Duration(minutes: 30);
+  saveTimer = Timer(timeInc, () async {
+      canSave = false;
+    },
+  );
+}
 
 void timerCSVAction(poll) async {
   final pollValue = await poll.value;
@@ -34,7 +68,7 @@ void startTimer() {
   sessionTimer = Timer.periodic(
     timeInc,
     (Timer timer) async {
-      if (sessionDuration.value == 0) {
+      if (sessionDuration.value <= 0) {
         sessionDuration.value = 3600;
         player.stop();
         timer.cancel();
@@ -110,6 +144,10 @@ void stopPumpTimer() {
   pumpTimer.cancel();
   pumpTimerStart = false;
   pumpValues.value = [600, pumpValues.value[1]];
+  print(canSave);
+  if (canSave) {
+    timerCSVAction(poll);
+  }
 }
 
 String timeToString(int seconds) {

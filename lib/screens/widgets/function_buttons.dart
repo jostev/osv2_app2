@@ -7,6 +7,8 @@ import 'package:osv2_app2/utils/timers.dart';
 const int PUMP_MODE_OFF = 100;
 const int PUMP_MODE_SUPER = 102;
 
+const int PUMP_OFFSET = 272;
+
 int sendingCommand = 0;
 
 Widget buildIconButtons(
@@ -16,6 +18,7 @@ Widget buildIconButtons(
   TextEditingController nameController, 
   FocusNode focusNode, 
   ThemeProvider themeProvider) {
+    
   TextStyle btn2 = TextStyle(
     fontSize: screenWidth * 0.015, 
     color: Theme.of(context).hintColor
@@ -144,15 +147,17 @@ Widget buildIconButtons(
               hoverElevation: 0,
               child: () {
                 Color color = Theme.of(context).primaryColor;
+                IconData icon = Icons.plumbing;
                 
-                if (pumpValues.value[1] == 2 + 272) {
+                if (pumpValues.value[1] == 2 + PUMP_OFFSET) {
                   color = Colors.green;
-                } else if (pumpValues.value[1] == 1 + 272) {
+                } else if (pumpValues.value[1] == 1 + PUMP_OFFSET) {
                   color = Colors.purple;
-                } else if (pumpValues.value[1] == 272) {
+                } else if (pumpValues.value[1] == PUMP_OFFSET) {
                   color = Theme.of(context).primaryColor;
                 } else {
-                  return const Icon(Icons.wifi, color: Colors.amber);
+                  color = Colors.amber;
+                  icon = Icons.wifi_off;
                 }
 
                 if (pumpTimerStart) {
@@ -165,7 +170,7 @@ Widget buildIconButtons(
                     )
                   );
                 } else {
-                  return Icon(Icons.plumbing, color: color);
+                  return Icon(icon, color: color);
                 }
               }(),
             );

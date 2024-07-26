@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:osv2_app2/model/poll.dart';
@@ -42,23 +44,70 @@ Widget buildChemicalReadings(
               fontWeight: FontWeight.w700
             );
             BarVisualData visualData = BarVisualData(
-              valueStyle: TextStyle(fontSize: 40, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
-              titleStyle: TextStyle(fontSize: 40, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
-              thickness: 20, 
+              valueStyle: TextStyle(fontSize: screenHeight * 0.06, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
+              titleStyle: TextStyle(fontSize: screenHeight * 0.06, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700),
+              thickness: screenHeight * 0.85 * 0.65 * 0.05, 
               correctColor: CustomColors.bar1, 
-              wrongColor: CustomColors.bar4
+              wrongColor: CustomColors.bar4,
+              animationDuration: const Duration(milliseconds: 500),
             );
             // moving average
             List<BarData> bars = [
               BarData(title: "PH", value: avgList(ph), max: 14, style: chart1),
               BarData(title: "ORP", value: avgList(orp).toInt(), max: 1800, style: chart1),
-              BarData(title: "CH", value: avgList(ch), max: 40, style: chart1),
+              BarData(title: "CH", value: avgList(ch), max: 15, style: chart1),
             ];
 
             if (snapshot.hasData) {
               String? error = snapshot.data!.error;
               if (error != null) {
-                return Text(error);
+                return Stack(children: [
+                  improvedBarChart(
+                    context,
+                    bars, 
+                    visualData,
+                    screenHeight * 0.85 * 0.65, 
+                    clampDouble(screenWidth * 0.44 / 3 - 20, 0, double.infinity)
+                  ),
+                  (){
+                    if (error.contains("Timeout") || snapshot.data!.ph == 0) {
+                      return Container(  
+                        height: screenHeight * 0.85 * 0.65 * 0.8,
+                        width: screenWidth * 0.5,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(children: [
+                          Text(
+                            "Quick fix: Ensure this is the only tablet connected to the Mineral Swim network or try reconnecting", 
+                            style: TextStyle(fontSize: screenHeight * 0.04, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700)
+                          ),
+                          Text(error)
+                        ],)
+                      );
+                    }
+                    return Container(  
+                      height: screenHeight * 0.85 * 0.65 * 0.8,
+                      width: screenWidth * 0.5,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(children: [
+                        Text(
+                          "Quick fix: Restart the tablet and try again", 
+                          style: TextStyle(fontSize: screenHeight * 0.04, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700)
+                        ),
+                        Text(error)
+                      ],)
+                    );
+                  }()
+                ],);
               }
 
               int mode = snapshot.data!.mode;
@@ -72,14 +121,45 @@ Widget buildChemicalReadings(
                       screenHeight * 0.85 * 0.65, 
                       clampDouble(screenWidth * 0.44 / 3 - 20, 0, double.infinity)
                     ),
-                    const Text("displaying old values.")
+                    Container(
+                      height: screenHeight * 0.85 * 0.65,
+                      width: screenWidth * 0.44,
+                      alignment: Alignment.topCenter,
+                      padding: const EdgeInsets.only(
+                        left: 30, 
+                        right: 30, 
+                        bottom: 30
+                      ),
+                      child: Container(  
+                        height: screenHeight * 0.85 * 0.65 * 0.15,
+                        width: screenWidth * 0.4,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          "Displaying old data", 
+                          style: TextStyle(fontSize: screenHeight * 0.025, color: Theme.of(context).hintColor, fontWeight: FontWeight.w700)
+                        )
+                      )
+                    )
                   ],
                 );
               }
-
+              
+              double chApprox = 7 * pow((snapshot.data!.orp + 100 * snapshot.data!.ph - 1263)/200, 7.87)/200;
+              chApprox = clampDouble(chApprox, 0, 20);
               // add values to lists
               ph.add(snapshot.data!.ph);
-              ch.add(snapshot.data!.ch);
+              // ch.add(snapshot.data!.ch);
+              if (snapshot.data!.ch > 0 || snapshot.data!.ch < 20) {
+                ch.add(snapshot.data!.ch);
+              } else {
+                ch.add(chApprox);
+              }
+
               orp.add(snapshot.data!.orp.toInt());
 
               // remove old values
@@ -90,9 +170,9 @@ Widget buildChemicalReadings(
 
             
             
-            if (snapshot.hasError) {
-              return Text("Error: ${snapshot.error}");
-            }
+            // if (snapshot.hasError) {
+            //   return Text("Error: ${snapshot.error}");
+            // }
             
             return improvedBarChart(
               context,

@@ -3,15 +3,19 @@ import 'package:just_audio/just_audio.dart';
 import 'timers.dart';
 
 List<String> music = [
-  "assets/music/CC_1HR.mp3",
-  "assets/music/CC_10&10.mp3",
-  // "assets/music/fun.mp3"
+  "assets/music/1HR_w_exit_track.mp3",
+  "assets/music/OR_1HR.mp3",
+  "assets/music/OR_10&10.mp3",
+  "assets/music/evacuation.mp3"
 ];
+
 List<String> musicNames = [
-  "1 Hour",
-  "10 & 10",
-  // "fun"
+  "1 Hour Silence",
+  "1 Hour Relaxing",
+  "10 & 10 Relaxing",
+  "Evacuation"
 ];
+
 ValueNotifier<int> selectedSong = ValueNotifier<int>(0);
 final player = AudioPlayer();
 
@@ -38,6 +42,7 @@ List<Widget> buildMusicButtons(TextStyle style, double screenWidth, double scree
                   player.stop();
                   player.setAsset(music[i]);
                   player.seek(Duration(seconds: 3600 - sessionDuration.value));
+                  player.setLoopMode(LoopMode.one);
                   player.play();
                 });
                 // player.stop();

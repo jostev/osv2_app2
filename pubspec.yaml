@@ -80,9 +80,14 @@ flutter:
     - assets/images/logo_by_maytronics.png
     - assets/images/logo.png
     - assets/images/white_logo.png
+    - assets/images/WELCOME.png
     - assets/music/CC_1HR.mp3
     - assets/music/CC_10&10.mp3
-    - assets/music/fun.mp3
+    - assets/music/CC_10.mp3
+    - assets/music/1HR_w_exit_track.mp3
+    - assets/music/evacuation.mp3
+    - assets/music/OR_1HR.mp3
+    - assets/music/OR_10&10.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
@@ -98,10 +103,10 @@ flutter:
   fonts:
     - family: Ubuntu
       fonts:
-        - asset: fonts/Ubuntu-Regular.ttf
-        - asset: fonts/Ubuntu-Italic.ttf
+        - asset: fonts/ProximaSansRegular.ttf
+        # - asset: fonts/Ubuntu-Italic.ttf
           style: italic
-        - asset: fonts/Ubuntu-Bold.ttf
+        - asset: fonts/ProximaSansBlack.ttf
           weight: 700
     
     - family: RobotoMono

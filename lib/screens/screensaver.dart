@@ -172,7 +172,6 @@ with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     if (widget.timerStarted) startTimer();
-    widget.usersName.replaceAll('\n', ' ');
   }
 
   @override
@@ -204,9 +203,9 @@ with SingleTickerProviderStateMixin {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset("assets/images/bg_image.jpeg", fit: BoxFit.fitWidth),
+              Image.asset("assets/images/WELCOME.png", fit: BoxFit.fitWidth),
               Container(color: const Color.fromARGB(77, 0, 0, 0),),
-              //const WaveAnimation(),
+              // const WaveAnimation(),
               Column(children: [
                 const Divider(height: 100, color: Colors.transparent,),
                 ValueListenableBuilder(
@@ -232,7 +231,7 @@ with SingleTickerProviderStateMixin {
                           child: Text(timeToString(widget.sentDuration - value), style: const TextStyle(
                             color: Colors.white, 
                             fontSize: 60,
-                            fontFamily: 'RobotoMono',
+                            // fontFamily: 'RobotoMono',
                             // fontWeight: FontWeight.w500
                           )
                         )
@@ -242,21 +241,21 @@ with SingleTickerProviderStateMixin {
                       () {
                         if (widget.sentDuration - value != 3600 || value == 0) {
                           return Text(
-                            'Welcome', 
+                            'WELCOME', 
                             style: TextStyle(
                               color: Colors.white, 
                               fontSize: size.width * 0.03, 
-                              fontFamily: 'RobotoMono',
+                              // fontFamily: 'RobotoMono',
                               // fontWeight: FontWeight.w300
                             )
                           );
                         } else {
                           return Text(
-                            'Thank you, please leave a review', 
+                            'THANK YOU, PLEASE LEAVE A REVIEW', 
                             style: TextStyle(
                               color: Colors.white, 
                               fontSize: size.width * 0.03, 
-                              fontFamily: 'RobotoMono',
+                              // fontFamily: 'RobotoMono',
                               // fontWeight: FontWeight.w300
                             )
                           );
@@ -266,11 +265,11 @@ with SingleTickerProviderStateMixin {
                   }
                 ),
                 Text(
-                  widget.usersName.replaceAll('\n', ' '), 
+                  widget.usersName.replaceAll('\n', ' ').toUpperCase(), 
                   style: TextStyle(
                     color: Colors.white, 
                     fontSize: size.width * 0.08 - 16,
-                    fontFamily: 'RobotoMono',
+                    // fontFamily: 'RobotoMono',
                     // fontWeight: FontWeight.w300,
                   ),
                 )
